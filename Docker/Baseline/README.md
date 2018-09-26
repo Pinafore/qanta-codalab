@@ -33,8 +33,8 @@ We provide docker files for building images of the batch
 and the HTTP service containers. The following commands
 can be used to build the images
 
-  docker build -f Baseline_Batch.DockerFile -t='qa_baseline_batch' .
-	docker build -f Baseline_HTTP.DockerFile -t='qa_baseline_http' .
+  	docker build -f Baseline_Batch.DockerFile -t='qa_baseline_batch' .
+  	docker build -f Baseline_HTTP.DockerFile -t='qa_baseline_http' .
 
 
 ## Input/Output Formats
