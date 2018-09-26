@@ -1,1 +1,2 @@
-# UMD Quiz Bowl Competition, Dec 15, 2018
+# Human-Computer Question Answering Competition @ UMD 
+## Dec 15, 2018
