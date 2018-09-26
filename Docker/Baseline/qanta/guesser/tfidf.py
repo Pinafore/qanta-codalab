@@ -38,6 +38,19 @@ class TfidfGuesser(AbstractGuesser):
         self.tfidf_matrix = self.tfidf_vectorizer.transform(x_array)
 
     def guess(self, questions: List[QuestionText], max_n_guesses: Optional[int]) -> List[List[Tuple[str, float]]]:
+
+        representations = self.tfidf_vectorizer.transform(questions)
+        guess_matrix = self.tfidf_matrix.dot(representations.T).T
+        guess_indices = (-guess_matrix).toarray().argsort(axis=1)[:,0:max_n_guesses]
+        
+        guesses = []
+        for i in range(len(questions)):
+            idxs = guess_indices[i]
+            guesses.append([(self.i_to_ans[j], guess_matrix[i,j]) for j in idxs])
+
+        return guesses
+    """
+    def guess(self, questions: List[QuestionText], max_n_guesses: Optional[int]) -> List[List[Tuple[str, float]]]:
         representations = self.tfidf_vectorizer.transform(questions)
         guess_matrix = self.tfidf_matrix.dot(representations.T).T
         guess_scores = guess_matrix.max(axis=1).toarray().reshape(-1)
@@ -49,7 +62,7 @@ class TfidfGuesser(AbstractGuesser):
             guesses.append([(self.i_to_ans[idx], score)])
 
         return guesses
-
+    """
     def save(self, directory: str) -> None:
         with open(os.path.join(directory, 'params.pickle'), 'wb') as f:
             pickle.dump({
