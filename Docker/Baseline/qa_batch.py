@@ -17,7 +17,7 @@ def batch_qa(input_file, output_file):
     """
     params
         input_file: each line is a question in json format
-            {"char_position":int, "question_text": str, "Incremental_text":str,"Is_new_sent":false/true}
+            {"char_position":int, "question_text": str, "Incremental_text":str,"is_new_sent":false/true}
         output_file: each line is a question in json format
             {"guess":str, "buzz": false/true}
     """
