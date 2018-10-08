@@ -76,13 +76,13 @@ The following command can be used to run the batch container
 Three fields need to be provided for the command above
  * `<path to data dir on host>` A directory on the host machine that contains the input questions file `<batch input file>`
  * `<batch input file>` The name of the input file. Each line
-    should be a question in the input format above. `sample_batch_input.txt` is an example input batch file.
+    should be a question in the input format above. `sample_batch_input.jsonl` is an example input batch file.
  * `<output file>` The name of the generated output file. The file
     will be placed in `<path to data dir on host>`.
 
  For example, if your data is in `/home/qa-data` then use
 
-  	 docker run -v /home/qb-data:/app/data -t -i qa_baseline_batch input_questions.txt answers.txt
+  	 docker run -v /home/qb-data:/app/data -t -i qa_baseline_batch sample_batch_input.jsonl answers.jsonl
 
 
 ### HTTP Service Mode

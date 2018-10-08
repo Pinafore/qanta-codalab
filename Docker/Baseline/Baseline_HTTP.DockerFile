@@ -1,5 +1,5 @@
 # Start with an anaconda (python 3.5) image
-FROM continuumio/anaconda3
+FROM continuum/anaconda3:5.2.0
 
 # Source the python environment
 CMD [ "source /opt/conda/bin/activate" ]
@@ -21,8 +21,5 @@ WORKDIR /app/
 RUN sh start_server.sh &
 
 # Start Service
-RUN chmod +x start_server.sh
-RUN chmod +x qa_server.py
-RUN chmod +x init.sh
 
 CMD ./init.sh

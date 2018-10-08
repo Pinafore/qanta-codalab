@@ -1,5 +1,5 @@
 # Start with an anaconda (python 3.5) image
-FROM continuumio/anaconda3
+FROM continuum/anaconda3:5.2.0
 
 # Source the python environment
 CMD [ "source /opt/conda/bin/activate" ]
@@ -18,7 +18,6 @@ COPY qanta-defaults.yaml /app/
 WORKDIR /app/
 
 # Start command
-RUN chmod +x qa_batch.py
 
 ENTRYPOINT [ "python", "qa_batch.py" ]
 
