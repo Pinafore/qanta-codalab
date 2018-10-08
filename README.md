@@ -61,8 +61,6 @@ the consists of the following fields:
 The output answer to each question is also a json object of two fields
  * `guess` Guessed Wikipedia answer entity
  * `buzz` true/false whether to buzz given the seen question text so far or not
- *  Guessed Wikipedia answer entity
-`: 0` and `opponent_scores: []`
 
 #### Example Output
 
