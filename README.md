@@ -23,7 +23,7 @@ is more suitable for the incremental question answering setup
 (e.g., when questions are provided word-by-word).
 
 
-## Training a baseline model
+## Download a pre-trained baseline model
 Building the docker images requires having a pre-trained
 TF-IDF model stored under `./tfidf_model/`.
 A pre-trained model can be downloaded using [this link](https://drive.google.com/file/d/1nqMPaMxnygGEz_VF1CoMK9XYQawl9Nov/view?usp=sharing). The script we used to train
