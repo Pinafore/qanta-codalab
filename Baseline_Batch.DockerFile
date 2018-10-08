@@ -1,5 +1,5 @@
 # Start with an anaconda (python 3.5) image
-FROM continuum/anaconda3:5.2.0
+FROM continuumio/anaconda3:5.2.0
 
 # Source the python environment
 CMD [ "source /opt/conda/bin/activate" ]
