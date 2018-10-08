@@ -27,7 +27,7 @@ is more suitable for the incremental question answering setup
 Building the docker images requires having a pre-trained
 TF-IDF model stored under `./tfidf_model/`.
 A pre-trained model can be downloaded using [this link](https://drive.google.com/file/d/1nqMPaMxnygGEz_VF1CoMK9XYQawl9Nov/view?usp=sharing). The script we used to train
-that model is `./train_tfidf_model.sh`.
+that model is `train_tfidf_model.sh`.
 
 
 ## Building Docker Images
@@ -89,13 +89,16 @@ Three fields need to be provided for the command above
 ### HTTP Service Mode
 The following command can be used to run the HTTP service container
 
-  	docker run -t -i qa_baseline_http
+  	docker run -p 8080:80 -t -i qa_baseline_http
 
-The command above will start a container that answers questions
-each submitted as an HTTP request, for example
+The command above will start a container that answers questions each submitted as an HTTP request. `-p 8080:80`
+maps port 8080 on the host machine to port 80 on the
+container (on which we bind the question answering service).
+For example, after starting the container, one can run
+the following curl request on the host machine
 
-  	curl -XPOST --header "Content-Type: application/json" -d '{"char_position":112, "question_text": "At its premiere, the librettist of this opera portrayed a character who asks for a glass of wine with his dying wish", "Incremental_text":"a glass of wine with his dying wish","is_new_sent":false }' http://localhost/qa
+  	curl -XPOST --header "Content-Type: application/json" -d '{"char_position":112, "question_text": "At its premiere, the librettist of this opera portrayed a character who asks for a glass of wine with his dying wish", "Incremental_text":"a glass of wine with his dying wish", "tossup_number": 1, "sent_number": 0 }' http://localhost:8080/qa
 
-which returns a json response
+and gets a json response
 
   	{"guess": "The_Marriage_of_Figaro", "buzz": true}

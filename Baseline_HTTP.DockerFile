@@ -20,6 +20,8 @@ COPY qanta-defaults.yaml /app/
 WORKDIR /app/
 RUN sh start_server.sh &
 
+EXPOSE 80
+
 # Start Service
 
 CMD ./init.sh

@@ -51,7 +51,7 @@ if __name__ == '__main__':
     
     server_class = HTTPServer
     handler_class = create_handler_class()
-    httpd = server_class(('localhost', 80), handler_class)
+    httpd = server_class(('0.0.0.0', 80), handler_class)
     print(time.asctime(), 'Server Starts - %s:%s' % ('localhost', 80))
     try:
         httpd.serve_forever()
