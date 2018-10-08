@@ -25,8 +25,10 @@ is more suitable for the incremental question answering setup
 
 ## Training a baseline model
 Building the docker images requires having a pre-trained
-TF-IDF model. `./prep.sh` can be used to download Quiz Bowl
-training set and train a model. The model is stored in `./tfidf_model`.
+TF-IDF model stored under `./tfidf_model/`.
+A pre-trained model can be downloaded using [this link](https://drive.google.com/file/d/1nqMPaMxnygGEz_VF1CoMK9XYQawl9Nov/view?usp=sharing). The script we used to train
+that model is `./train_tfidf_model.sh`.
+
 
 ## Building Docker Images
 The instructions below assumes that docker is installed on
