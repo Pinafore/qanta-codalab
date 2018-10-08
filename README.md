@@ -51,12 +51,13 @@ the consists of the following fields:
  * `char_position` Character position of provided question text
  * `question_text` Question text up to `char_position`
  * `incremental_text` Incremental text from last position to current position
- * `is_new_sent` true/false is `incremental_text` a new sentence
- * `tossup_number` question number.
+ * `tossup_number` question number
+ * `sent_number` The current sentence number. (starting from 0 for the tokens in the first sentence of the questions)
+
 
 #### Example Input
 
-   	{"char_position":112, "question_text": "At its premiere, the librettist of this opera portrayed a character who asks for a glass of wine with his dying wish", "Incremental_text":"a glass of wine with his dying wish","is_new_sent":false, tossup_number: 1}
+   	{"char_position":112, "question_text": "At its premiere, the librettist of this opera portrayed a character who asks for a glass of wine with his dying wish", "Incremental_text":"a glass of wine with his dying wish", "tossup_number": 1, "sent_number": 0}
 
 The output answer to each question is also a json object of two fields
  * `guess` Guessed Wikipedia answer entity
