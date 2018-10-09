@@ -1,5 +1,0 @@
-guessers:
-  qanta.guesser.tfidf.TfidfGuesser:
-    - enabled: false
-      luigi_dependency: qanta.pipeline.guesser.EmptyTask
-      random_seed: null

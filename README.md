@@ -1,3 +1,7 @@
+# Installation
+
+You will only need to have [docker](https://docker.com) and `docker-compose` installed to run this reference system.
+
 # Example Docker Containers
 
 We provide an example [docker](http://docker.com) container for answering

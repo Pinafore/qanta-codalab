@@ -1,11 +1,8 @@
-# Start with an anaconda (python 3.5) image
-FROM continuumio/anaconda3:5.2.0
+# Start with an anaconda (python 3.6) image
+FROM continuumio/anaconda3:5.3.0
 
-# Source the python environment
-CMD [ "source /opt/conda/bin/activate" ]
-
-# installing modules 
-RUN pip install boto3
+COPY environment.yaml /environment.yaml
+RUN conda env create -f environment.yml
 
 # Copy scripts, and trained model
 
@@ -20,7 +17,8 @@ COPY qanta-defaults.yaml /app/
 WORKDIR /app/
 RUN sh start_server.sh &
 
-EXPOSE 80
+# Expose port (based on Balmer series emission line, for science!)
+EXPOSE 4861
 
 # Start Service
 

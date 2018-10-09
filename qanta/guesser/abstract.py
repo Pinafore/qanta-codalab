@@ -5,22 +5,14 @@ from collections import defaultdict, namedtuple, Counter
 from abc import ABCMeta, abstractmethod
 from typing import List, Dict, Tuple, Optional, NamedTuple
 import pickle
-
-import matplotlib
-with warnings.catch_warnings():
-    warnings.simplefilter('ignore')
-    matplotlib.use('Agg')
 import pandas as pd
 
 from qanta.datasets.abstract import TrainingData, QuestionText, Page
 from qanta.datasets.quiz_bowl import QuizBowlDataset, QantaDatabase
-from qanta.config import conf
 from qanta.util import constants as c
 from qanta.util.io import safe_path
-from qanta import qlogging
 
 
-log = qlogging.get(__name__)
 
 
 def get_class(instance_module: str, instance_class: str):
@@ -207,7 +199,7 @@ class AbstractGuesser(metaclass=ABCMeta):
                 'Guesser has wrong number of answers: len(guesses_per_question)={} len(question_texts)={}'.format(
                     len(guesses_per_question), len(question_texts)))
 
-        log.info('Creating guess dataframe from guesses...')
+        print('Creating guess dataframe from guesses...')
         df_qnums = []
         df_proto_id = []
         df_char_indices = []
@@ -249,7 +241,7 @@ class AbstractGuesser(metaclass=ABCMeta):
     @staticmethod
     def save_guesses(guess_df: pd.DataFrame, directory: str, folds: List[str], output_type):
         for fold in folds:
-            log.info('Saving fold {}'.format(fold))
+            print('Saving fold {}'.format(fold))
             fold_df = guess_df[guess_df.fold == fold]
             output_path = AbstractGuesser.guess_path(directory, fold, output_type)
             fold_df.to_pickle(output_path)
@@ -402,12 +394,6 @@ class AbstractGuesser(metaclass=ABCMeta):
             c.GUESSER_TARGET_PREFIX, guesser_path, str(config_num), file
         ))
 
-    @staticmethod
-    def reporting_path(guesser_module: str, guesser_class: str, config_num: int, file: str):
-        guesser_path = '{}.{}'.format(guesser_module, guesser_class)
-        return safe_path(os.path.join(
-            c.GUESSER_REPORTING_PREFIX, guesser_path, str(config_num), file
-        ))
 
     def web_api(self, host='0.0.0.0', port=5000, debug=False):
         from flask import Flask, jsonify, request
@@ -436,16 +422,16 @@ class AbstractGuesser(metaclass=ABCMeta):
             g_classname = parts[-1]
             guesser_lookup[name] = (get_class(g_module, g_classname), g_qualified_name)
 
-        log.info(f'Loading guessers: {guesser_names}')
+        print(f'Loading guessers: {guesser_names}')
         guessers = {}
         for name in guesser_names:
             if name in guesser_lookup:
                 g_class, g_qualified_name = guesser_lookup[name]
                 guesser_path = os.path.join('output/guesser', g_qualified_name)
-                log.info(f'Loading "{name}" corresponding to "{g_qualified_name}" located at "{guesser_path}"')
+                print(f'Loading "{name}" corresponding to "{g_qualified_name}" located at "{guesser_path}"')
                 guessers[name] = g_class.load(guesser_path)
             else:
-                log.info(f'Guesser with name="{name}" not found')
+                print(f'Guesser with name="{name}" not found')
 
         @app.route('/api/guesser', methods=['POST'])
         def guess():

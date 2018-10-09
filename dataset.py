@@ -7,8 +7,7 @@ from os import path, makedirs
 DS_VERSION = '2018.04.18'
 S3_HTTP_PREFIX = 'https://s3-us-west-2.amazonaws.com/pinafore-us-west-2/qanta-jmlr-datasets/'
 S3_AWS_PREFIX = 's3://pinafore-us-west-2/qanta-jmlr-datasets/'
-LOCAL_PLOTTING_PREFIX = 'data/external/'
-LOCAL_QANTA_PREFIX = 'data/external/datasets/'
+LOCAL_QANTA_PREFIX = 'data/'
 
 QANTA_UNMAPPED_DATASET_PATH = f'qanta.unmapped.{DS_VERSION}.json'
 QANTA_PROCESSED_DATASET_PATH = f'qanta.processed.{DS_VERSION}.json'
@@ -18,9 +17,6 @@ QANTA_SQLITE_DATASET_PATH = f'qanta.{DS_VERSION}.sqlite3'
 QANTA_TRAIN_DATASET_PATH = f'qanta.train.{DS_VERSION}.json'
 QANTA_DEV_DATASET_PATH = f'qanta.dev.{DS_VERSION}.json'
 QANTA_TEST_DATASET_PATH = f'qanta.test.{DS_VERSION}.json'
-QANTA_TORCH_TRAIN = f'qanta.torchtext.train.{DS_VERSION}.json'
-QANTA_TORCH_VAL = f'qanta.torchtext.val.{DS_VERSION}.json'
-QANTA_TORCH_DEV = f'qanta.torchtext.dev.{DS_VERSION}.json'
 
 FILES = [
     QANTA_UNMAPPED_DATASET_PATH,
@@ -33,25 +29,8 @@ FILES = [
     QANTA_TEST_DATASET_PATH
 ]
 
-TORCH_FILES = [QANTA_TORCH_TRAIN, QANTA_TORCH_DEV, QANTA_TORCH_VAL]
-
-WIKIDATA_FILE = 'wikidata-claims_instance-of.jsonl'
-WIKIDATA_S3 = path.join(S3_HTTP_PREFIX, WIKIDATA_FILE)
-WIKIDATA_PATH = path.join('data/external/', WIKIDATA_FILE)
-
-SQUAD_PATH = 'squad/train-v1.1.json'
-TRIVIA_QA_PATH = 'triviaqa/unfiltered-web-train.json'
-SIMPLE_QUESTIONS_PATH = 'simplequestions/annotated_fb_data_train.txt'
-JEOPARDY_PATH = 'jeopardy/jeopardy_questions.json'
-VITAL_ARTICLES_PATH = 'wikipedia/vital_articles.json'
-DATASET_FILES = [SQUAD_PATH, TRIVIA_QA_PATH, SIMPLE_QUESTIONS_PATH, JEOPARDY_PATH, VITAL_ARTICLES_PATH]
-
 DATASET_CHOICES = {
-    'qanta_minimal': [
-        QANTA_TRAIN_DATASET_PATH, QANTA_DEV_DATASET_PATH, QANTA_TEST_DATASET_PATH, QANTA_SQLITE_DATASET_PATH
-    ],
     'qanta_full': FILES,
-    'plotting': DATASET_FILES
 }
 
 
@@ -81,7 +60,7 @@ def main():
 @click.option('--local-qanta-prefix', default=LOCAL_QANTA_PREFIX)
 @click.option('--local-plotting-prefix', default=LOCAL_PLOTTING_PREFIX)
 @click.option('--dataset', default='qanta_minimal',
-              type=click.Choice(['qanta_minimal', 'qanta_full', 'wikidata', 'plotting']))
+              type=click.Choice(['qanta_full']))
 def download(local_qanta_prefix, local_plotting_prefix, dataset):
     """
     Download the qanta dataset
