@@ -119,3 +119,7 @@ docker tag qanta-codalab_qb:latest entilzha/quizbowl
 docker push entilzha/quizbowl
 ```
 
+# TODO
+
+Describe how to run the scripts that codalab uses to evaluate against the running web service (this requires having said scripts...).
+
