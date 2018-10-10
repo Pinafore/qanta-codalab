@@ -25,7 +25,7 @@ There are three commands you can run with the provided files in this repository:
 ```
 docker-compose run qb ./cli download
 docker-compose run qb ./cli train
-docker-compose run qb ./cli web
+docker-compose up
 ```
 
 Under the hood `docker-compose` references the `docker-compose.yml` file. The
@@ -37,8 +37,7 @@ the model's dependencies. The effect of each command is described below:
 1. `download` will download the quiz bowl training dataset to `data/`
 2. `train` will use the downloaded data to train a tfidf based guesser and
    static threshold buzzer saved to `models/`
-3. `web` will start a web server that the codalab server will interact with
-4. `batch` is a convenience for computing guess/buzz outcomes in batch.
+3. `up` will start a web server that the codalab server will interact with
 
 Running these commands downloads the data and trains a model
 
