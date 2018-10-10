@@ -75,28 +75,33 @@ is important that your system responds correctly to this specific HTTP
 endpoint.
 
 # Input/Output Formats
-In addition to the `question_text` field shown in the `httpie` sample request,
+In addition to the `question_text` field shown in the `httpie` sample request we provide a few additional fields.
 we also provide the following fields which you may find useful.
 
- * `char_position` Character position of provided question text
- * `question_text` Question text up to `char_position`
- * `incremental_text` Incremental text from last position to current position
- * `tossup_number` question number
- * `sent_number` The current sentence number. (starting from 0 for the tokens
-   in the first sentence of the questions)
+ * `question_idx`: question number in the current game.
+ * `char_idx`: Character position of text. This corresponds on the server to `full_question[0:char_idx]` if `full_question` is the entire question.
+ * `sent_idx`: The current sentence number.
+ * `text` Question text up to `char_idx`
 
 
 ## Example Input
 
-   	{"char_position":112, "question_text": "At its premiere, the librettist of this opera portrayed a character who asks for a glass of wine with his dying wish", "incremental_text":"a glass of wine with his dying wish", "tossup_number": 1, "sent_number": 0}
+```json
+{
+  "question_idx": 0
+  "char_idx": 112,
+  "sent_idx": 0
+  "text": "At its premiere, the librettist of this opera portrayed a character who asks for a glass of wine with his dying wish"
+}
+```
 
 The output answer to each question is also a json object of two fields
  * `guess` Guessed Wikipedia answer entity
  * `buzz` true/false whether to buzz given the seen question text so far or not
 
-## Example Output
-
-  	{"guess": "The_Marriage_of_Figaro", "buzz": true}
+```json
+{"guess": "The_Marriage_of_Figaro", "buzz": true}
+```
 
 ## Batch Mode
 We also provide a batch mode for convenience. In the batch mode, the container is
@@ -107,7 +112,7 @@ each of the given questions.
 You can run this with
 
 ```bash
-docker-compose run qb ./cli batch input_file output_file
+docker-compose run qb ./cli batch data/input_file data/output_file
 ```
 
 # Dockerhub Maintainer Notes
