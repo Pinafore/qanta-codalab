@@ -1,7 +1,7 @@
 version: '3'
 services:
   qb:
-    image: "docker.io/entilzha/quizbowl"
+    build: .
     ports:
       - "4861:4861"
     volumes:
