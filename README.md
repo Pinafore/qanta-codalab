@@ -102,18 +102,6 @@ The output answer to each question is also a json object of two fields
 {"guess": "The_Marriage_of_Figaro", "buzz": true}
 ```
 
-## Batch Mode
-We also provide a batch mode for convenience. In the batch mode, the container is
-run for a given input file that consists of multiple questions, one question
-per line.  The container produces an output file that consists of answers to
-each of the given questions.
-
-You can run this with
-
-```bash
-docker-compose run qb ./cli batch data/input_file data/output_file
-```
-
 # Dockerhub Maintainer Notes
 
 The default docker-compose file references the published image for quizbowl at

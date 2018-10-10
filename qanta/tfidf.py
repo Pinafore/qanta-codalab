@@ -111,28 +111,6 @@ def web(host, port):
 
 
 @cli.command()
-@click.argument('input_file')
-@click.argument('output_file')
-def batch(input_file, output_file):
-    """
-    Run batch mode where input files conform to:
-    """
-    tfidf_guesser = TfidfGuesser.load()
-
-    def _guess(question_text):
-        guesses = tfidf_guesser.guess([question_text], BUZZ_NUM_GUESSES)[0]
-        scores = [guess[1] for guess in guesses]
-        buzz = scores[0] / sum(scores) >= BUZZ_THRESHOLD
-        return guesses[0][0], buzz
-
-    with open(path.join('data', output_file), 'w') as outh:
-        with open(path.join('data', input_file)) as inh:
-            for question_json in tqdm(inh):
-                guess, buzz = _guess(json.loads(question_json)['text'])
-                outh.write(json.dumps({'guess': guess, 'buzz': True if buzz else False}) + '\n')
-
-
-@cli.command()
 def train():
     """
     Train the tfidf model, requires downloaded data and saves to models/
