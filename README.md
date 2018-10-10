@@ -1,12 +1,12 @@
 # Installation
 
-You will only need to have [docker](https://docker.com) and `docker-compose`
+You will only need to have [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/)
 installed to run this reference system. There are no other requirements since
 everything inside of the container.
 
 # Reference System
 
-We provide an example [docker](http://docker.com) container for answering Quiz
+We provide sample code which when combined with the provided docker container can answer Quiz
 Bowl questions. This should both provide an example of how the codalab server
 interacts with the container as well as a simple yet surprisingly effective
 baseline. The simple system consists of a TF-IDF guesser and a threshold-based
@@ -14,25 +14,18 @@ buzzer.  The input unit to the system is a question (sequence of words) and the
 system outputs an answer guess (a Wikipedia entity) and a binary decision
 whether to buzz or not.
 
-We provide the reference http method for interacting with the docker container
-as well as a batch mode for convenience. In the batch mode, the container is
-run for a given input file that consists of multiple questions, one question
-per line.  The container produces an output file that consists of answers to
-each of the given questions. The HTTP service container starts a background
-service that processes POST requests (submitted for example using a Curl
-command), where each request is an individual question. The HTTP service
-container is more suitable for the incremental question answering setup (e.g.,
+We provide the reference http method for interacting with the docker container.
+Each request is an individual question which is more suitable for the incremental question answering setup (e.g.,
 when questions are provided word-by-word).
 
 # Running
 
-There are four commands you can run with the provided files in this repository:
+There are three commands you can run with the provided files in this repository:
 
 ```
 docker-compose run qb ./cli download
 docker-compose run qb ./cli train
 docker-compose run qb ./cli web
-docker-compose run qb ./cli batch input_file output_file
 ```
 
 Under the hood `docker-compose` references the `docker-compose.yml` file. The
@@ -105,6 +98,18 @@ The output answer to each question is also a json object of two fields
 
   	{"guess": "The_Marriage_of_Figaro", "buzz": true}
 
+## Batch Mode
+We also provide a batch mode for convenience. In the batch mode, the container is
+run for a given input file that consists of multiple questions, one question
+per line.  The container produces an output file that consists of answers to
+each of the given questions.
+
+You can run this with
+
+```bash
+docker-compose run qb ./cli batch input_file output_file
+```
+
 # Dockerhub Maintainer Notes
 
 The default docker-compose file references the published image for quizbowl at
@@ -122,4 +127,3 @@ docker push entilzha/quizbowl
 # TODO
 
 Describe how to run the scripts that codalab uses to evaluate against the running web service (this requires having said scripts...).
-
