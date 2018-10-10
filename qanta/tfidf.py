@@ -87,7 +87,7 @@ def create_app():
 
     @app.route('/api/1.0/quizbowl/act', methods=['POST'])
     def act():
-        question = request.form['question_text']
+        question = request.form['text']
         guess, buzz = guess_and_buzz(tfidf_guesser, question)
         return jsonify({'guess': guess, 'buzz': True if buzz else False})
 
@@ -116,11 +116,6 @@ def web(host, port):
 def batch(input_file, output_file):
     """
     Run batch mode where input files conform to:
-
-    input_file: each line is a question in json format
-        {"char_position":int, "question_text": str, "Incremental_text":str,"is_new_sent":false/true}
-    output_file: each line is a question in json format
-        {"guess":str, "buzz": false/true}
     """
     tfidf_guesser = TfidfGuesser.load()
 
@@ -133,7 +128,7 @@ def batch(input_file, output_file):
     with open(path.join('data', output_file), 'w') as outh:
         with open(path.join('data', input_file)) as inh:
             for question_json in tqdm(inh):
-                guess, buzz = _guess(json.loads(question_json)['question_text'])
+                guess, buzz = _guess(json.loads(question_json)['text'])
                 outh.write(json.dumps({'guess': guess, 'buzz': True if buzz else False}) + '\n')
 
 

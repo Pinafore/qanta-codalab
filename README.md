@@ -57,7 +57,7 @@ After that is running you can run this command (requires
 [httpie](https://httpie.org/)) to verify things work correctly:
 
 ```bash
-$ http --form POST http://0.0.0.0:4861/api/1.0/quizbowl/act question_text='Name the the inventor of general relativity and the photoelectric effect'
+$ http --form POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
 HTTP/1.0 200 OK
 Content-Length: 41
 Content-Type: application/json
