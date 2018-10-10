@@ -78,8 +78,8 @@ endpoint.
 In addition to the `question_text` field shown in the `httpie` sample request we provide a few additional fields.
 we also provide the following fields which you may find useful.
 
- * `question_idx`: question number in the current game.
- * `char_idx`: Character position of text. This corresponds on the server to `full_question[0:char_idx]` if `full_question` is the entire question.
+ * `question_idx`: Question number in the current game.
+ * `char_idx`: This corresponds on the server to `full_question[0:char_idx]` if `full_question` is the entire question.
  * `sent_idx`: The current sentence number.
  * `text` Question text up to `char_idx`
 
@@ -88,9 +88,9 @@ we also provide the following fields which you may find useful.
 
 ```json
 {
-  "question_idx": 0
+  "question_idx": 0,
   "char_idx": 112,
-  "sent_idx": 0
+  "sent_idx": 0,
   "text": "At its premiere, the librettist of this opera portrayed a character who asks for a glass of wine with his dying wish"
 }
 ```
