@@ -1,0 +1,9 @@
+version: '3'
+services:
+  qb:
+    build: .
+    ports:
+      - "4861:4861"
+    volumes:
+      - .:/src
+    command: ["./cli", "web"]
