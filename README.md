@@ -14,9 +14,9 @@ buzzer.  The input unit to the system is a question (sequence of words) and the
 system outputs an answer guess (a Wikipedia entity) and a binary decision
 whether to buzz or not.
 
-We provide two methods for interacting with the docker container—**Batch
-container** and **HTTP service container**.  In the batch mode, the container
-is run for a given input file that consists of multiple questions, one question
+We provide the reference http method for interacting with the docker container
+as well as a batch mode for convenience. In the batch mode, the container is
+run for a given input file that consists of multiple questions, one question
 per line.  The container produces an output file that consists of answers to
 each of the given questions. The HTTP service container starts a background
 service that processes POST requests (submitted for example using a Curl
