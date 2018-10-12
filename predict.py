@@ -15,8 +15,9 @@ def _web(input_dir):
 @click.argument('code_dir')
 @click.argument('input_dir')
 @click.argument('output_dir')
+@click.argument('score_dir')
 @click.option('--char_step_size', default=25)
-def predict(code_dir, input_dir, output_dir, char_step_size):
+def predict(code_dir, input_dir, output_dir, score_dir, char_step_size):
     web_proc = subprocess.Popen(['python', '-m', code_dir, 'web'],
                                 preexec_fn=os.setsid,
                                 stdout=subprocess.PIPE)
