@@ -7,8 +7,6 @@ import requests
 import subprocess
 import numpy as np
 
-from qanta.tfidf import web
-
 
 class CurveScore:
 
@@ -33,18 +31,15 @@ class CurveScore:
         return weight * result
 
 
-def _web(input_dir):
-    web()
-
-
 @click.command()
 @click.argument('code_dir')
 @click.argument('input_dir')
-@click.argument('output_dir')
-@click.argument('score_dir')
+@click.argument('output_dir', default='predictions.json')
+@click.argument('score_dir', default='scores.json')
 @click.option('--char_step_size', default=25)
 def evaluate(code_dir, input_dir, output_dir, score_dir, char_step_size):
-    web_proc = subprocess.Popen(['python', '-m', code_dir, 'web'],
+    web_proc = subprocess.Popen('bash {}/run.sh web'.format(code_dir),
+                                shell=True,
                                 preexec_fn=os.setsid,
                                 stdout=subprocess.PIPE)
     output = ''
