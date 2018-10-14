@@ -13,7 +13,7 @@ from qanta import util
 from qanta.dataset import QuizBowlDataset
 
 
-MODEL_PATH = 'models/tfidf.pickle'
+MODEL_PATH = 'tfidf.pickle'
 BUZZ_NUM_GUESSES = 10
 BUZZ_THRESHOLD = 0.3
 
