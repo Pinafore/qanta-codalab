@@ -54,9 +54,16 @@ The output answer to each question is also a json object of two fields
 
 ## Code Requirements
 
-The only requirement we enforce on all systems is that if the current working
+The first requirement we enforce on all systems is that if the current working
 directory is the contents of `src/`, and if we run `bash run.sh` that it will
 start a web server satisfying the input/output formats outlined above.
+
+The second requirement we enforce is that all systems should support a status API:
+
+* URL: `/api/1.0/quizbowl/status`
+* `ready`: return True if ready to accept requests
+* `batch`: True if model accepts batch API (see farther down), False otherwise
+* `batch_size`: If `batch` is true, an integer indicating max batch size
 
 # Reference System
 
@@ -119,6 +126,12 @@ Server: Werkzeug/0.14.1 Python/3.7.0
     "guess": "Albert_Einstein"
 }
 ```
+
+### Batch Web API
+
+Some models may run more efficiently using an API which batches questions together. To use this API you should implement two endpoints:
+
+``````
 
 # Codalab
 

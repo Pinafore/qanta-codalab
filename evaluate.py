@@ -14,6 +14,13 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
+elog = logging.getLogger('eval')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh = logging.FileHandler('evaluation.log')
+fh.setLevel(logging.INFO)
+fh.setFormatter(formatter)
+
+
 class CurveScore:
     def __init__(self, curve_pkl='../curve_pipeline.pkl'):
         with open(curve_pkl, 'rb') as f:
@@ -62,7 +69,9 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_w
     answers = []
     questions = json.load(open(input_dir))['questions']
     start = time.time()
+    elog.info('Collecting responses to questions')
     for question_idx, q in enumerate(tqdm(questions)):
+        elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
         answers.append([])
         sent_tokenizations = q['tokenizations']
         # get an answer every K characters
@@ -85,6 +94,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_w
     if not norun_web:
         os.killpg(os.getpgid(web_proc.pid), signal.SIGTERM)
 
+    elog.info('Computing curve score of results')
     curve_score = CurveScore(curve_pkl=curve_pkl)
     curve_results = []
     eoq_results = []

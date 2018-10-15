@@ -91,6 +91,14 @@ def create_app():
         guess, buzz = guess_and_buzz(tfidf_guesser, question)
         return jsonify({'guess': guess, 'buzz': True if buzz else False})
 
+    @app.route('/api/1.0/quizbowl/status', methods=['GET'])
+    def status():
+        return jsonify({
+            'batch': False,
+            'batch_size': 200,
+            'ready': True
+        })
+
     return app
 
 
