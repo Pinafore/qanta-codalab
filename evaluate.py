@@ -6,6 +6,10 @@ import signal
 import requests
 import subprocess
 import numpy as np
+import logging
+
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 class CurveScore:
@@ -50,7 +54,8 @@ def evaluate(code_dir, input_dir, output_dir, score_dir, char_step_size):
     url = 'http://0.0.0.0:4861/api/1.0/quizbowl/act'
     answers = []
     questions = json.load(open(input_dir))['questions']
-    for question_idx, q in enumerate(questions[:10]):
+    for question_idx, q in enumerate(questions):
+        print('{} / {}'.format(question_idx, len(questions)))
         answers.append([])
         sent_tokenizations = q['tokenizations']
         # get an answer every K characters
