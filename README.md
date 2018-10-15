@@ -144,7 +144,7 @@ Output:
 
 # Codalab
 
-These instructions show you how to setup and run a codalab compatible model locally, but to submit to codalab you should follow the instructions at [qanta.org/codalab](https://qanta.org/codalab).
+These instructions show you how to setup and run a codalab compatible model locally, but to submit to codalab you should follow the instructions at [codalab.qanta.org](https://codalab.qanta.org/).
 
 The diagram below shows how Docker, codalab, and the evaluation scripts are related.
 
