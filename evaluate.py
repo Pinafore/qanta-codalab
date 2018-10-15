@@ -15,9 +15,8 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 class CurveScore:
-
-    def __init__(self):
-        with open('../curve_pipeline.pkl', 'rb') as f:
+    def __init__(self, curve_pkl='../curve_pipeline.pkl'):
+        with open(curve_pkl, 'rb') as f:
             self.pipeline = pickle.load(f)
 
     def get_weight(self, x):
@@ -45,7 +44,8 @@ class CurveScore:
 @click.option('--hostname', default='0.0.0.0')
 @click.option('--norun-web', default=False, is_flag=True)
 @click.option('--wait', default=0, type=int)
-def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_web, wait):
+@click.option('--curve-pkl', default='../curve_pipeline.pkl')
+def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_web, wait, curve_pkl):
     if wait > 0:
         time.sleep(wait)
     if not norun_web:
@@ -85,7 +85,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_w
     if not norun_web:
         os.killpg(os.getpgid(web_proc.pid), signal.SIGTERM)
 
-    curve_score = CurveScore()
+    curve_score = CurveScore(curve_pkl=curve_pkl)
     curve_results = []
     eoq_results = []
     for question_idx, guesses in enumerate(answers):
