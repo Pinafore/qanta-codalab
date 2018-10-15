@@ -17,3 +17,5 @@ services:
     command: ["python", "/eval/evaluate.py", "--curve-pkl", "/eval/curve_pipeline.pkl", "--wait", "5", "--hostname", "qb", "--norun-web", "data/qanta.dev.2018.04.18.json"]
     depends_on:
       - "qb"
+    environment:
+      - "PYTHONUNBUFFERED=1"
