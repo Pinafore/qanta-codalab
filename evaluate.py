@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import click
 import pickle
 import signal
@@ -37,8 +38,8 @@ class CurveScore:
 
 @click.command()
 @click.argument('input_dir')
-@click.argument('output_dir', default='predictions.json')
-@click.argument('score_dir', default='scores.json')
+@click.argument('output_dir', default='../predictions.json')
+@click.argument('score_dir', default='../scores.json')
 @click.option('--char_step_size', default=25)
 def evaluate(input_dir, output_dir, score_dir, char_step_size):
     web_proc = subprocess.Popen(
@@ -52,7 +53,8 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size):
 
     url = 'http://0.0.0.0:4861/api/1.0/quizbowl/act'
     answers = []
-    questions = json.load(open(input_dir))['questions']
+    questions = json.load(open(input_dir))['questions'][:10]
+    start = time.time()
     for question_idx, q in enumerate(questions):
         answers.append([])
         sent_tokenizations = q['tokenizations']
@@ -68,6 +70,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size):
                 resp = requests.post(url, data=query).content.decode('utf-8')
                 query.update(json.loads(resp))
                 answers[-1].append(query)
+    print((time.time() - start) / len(questions))
 
     with open(output_dir, 'w') as f:
         json.dump(answers, f)
