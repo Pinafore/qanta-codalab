@@ -139,7 +139,7 @@ These instructions show you how to setup and run a codalab compatible model loca
 
 The diagram below shows how Docker, codalab, and the evaluation scripts are related.
 
-![codalab](diagram-evaluate.pdf)
+![codalab and docker evaluation](diagram.png)
 
 At a high level:
 1. You submit your code/model for evaluation by running either the `docker-compose` command or the codalab macro.
