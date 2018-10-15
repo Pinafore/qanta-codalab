@@ -42,15 +42,20 @@ class CurveScore:
 @click.argument('score_dir', default='../scores.json')
 @click.option('--char_step_size', default=25)
 @click.option('--hostname', default='0.0.0.0')
-def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname):
-    web_proc = subprocess.Popen(
-        'bash run.sh', shell=True,
-        # ['python', '-m', code_dir, 'web'],
-        preexec_fn=os.setsid,
-        stdout=subprocess.PIPE)
-    output = ''
-    while 'Debug mode' not in output:
-        output = web_proc.stdout.readline().decode('utf-8')
+@click.option('--norun-web', default=False, is_flag=True)
+@click.option('--wait', default=0)
+def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_web, wait):
+    if wait > 0:
+        time.sleep(wait)
+    if not norun_web:
+        web_proc = subprocess.Popen(
+            'bash run.sh', shell=True,
+            # ['python', '-m', code_dir, 'web'],
+            preexec_fn=os.setsid,
+            stdout=subprocess.PIPE)
+        output = ''
+        while 'Debug mode' not in output:
+            output = web_proc.stdout.readline().decode('utf-8')
 
     url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
     answers = []
@@ -76,7 +81,8 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname):
     with open(output_dir, 'w') as f:
         json.dump(answers, f)
 
-    os.killpg(os.getpgid(web_proc.pid), signal.SIGTERM)
+    if not norun_web:
+        os.killpg(os.getpgid(web_proc.pid), signal.SIGTERM)
 
     curve_score = CurveScore()
     curve_results = []
