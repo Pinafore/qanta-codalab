@@ -37,12 +37,10 @@ class CurveScore:
 
 @click.command()
 @click.argument('input_dir')
-@click.argument('n_questions', default=-1)
-@click.option('--char_step_size', default=25)
 @click.argument('output_dir', default='predictions.json')
 @click.argument('score_dir', default='scores.json')
-def evaluate(input_dir,  n_questions, char_step_size,
-             output_dir, score_dir):
+@click.option('--char_step_size', default=25)
+def evaluate(input_dir, output_dir, score_dir, char_step_size):
     web_proc = subprocess.Popen(
         'bash run.sh', shell=True,
         # ['python', '-m', code_dir, 'web'],
@@ -55,8 +53,6 @@ def evaluate(input_dir,  n_questions, char_step_size,
     url = 'http://0.0.0.0:4861/api/1.0/quizbowl/act'
     answers = []
     questions = json.load(open(input_dir))['questions']
-    if n_questions > 0:
-        questions = questions[:n_questions]
     for question_idx, q in enumerate(questions):
         answers.append([])
         sent_tokenizations = q['tokenizations']
