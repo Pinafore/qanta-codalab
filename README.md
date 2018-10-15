@@ -129,9 +129,18 @@ Server: Werkzeug/0.14.1 Python/3.7.0
 
 ### Batch Web API
 
-Some models may run more efficiently using an API which batches questions together. To use this API you should implement two endpoints:
+WIP: More updates coming soon
 
-``````
+GET URL: `/api/1.0/quizbowl/status`
+
+Output:
+```json
+{
+  "batch": true,
+  "batch_size": 200,
+  "ready": true
+}
+```
 
 # Codalab
 
