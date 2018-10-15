@@ -38,10 +38,11 @@ class CurveScore:
 @click.argument('score_dir', default='scores.json')
 @click.option('--char_step_size', default=25)
 def evaluate(code_dir, input_dir, output_dir, score_dir, char_step_size):
-    web_proc = subprocess.Popen('bash {}/run.sh web'.format(code_dir),
-                                shell=True,
-                                preexec_fn=os.setsid,
-                                stdout=subprocess.PIPE)
+    web_proc = subprocess.Popen(
+        'bash {}/run.sh web'.format(code_dir), shell=True,
+        # ['python', '-m', code_dir, 'web'],
+        preexec_fn=os.setsid,
+        stdout=subprocess.PIPE)
     output = ''
     while 'Debug mode' not in output:
         output = web_proc.stdout.readline().decode('utf-8')
