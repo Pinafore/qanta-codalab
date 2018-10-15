@@ -43,7 +43,7 @@ class CurveScore:
 @click.option('--char_step_size', default=25)
 @click.option('--hostname', default='0.0.0.0')
 @click.option('--norun-web', default=False, is_flag=True)
-@click.option('--wait', default=0)
+@click.option('--wait', default=0, type=int)
 def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_web, wait):
     if wait > 0:
         time.sleep(wait)
