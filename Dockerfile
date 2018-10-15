@@ -8,6 +8,5 @@ COPY environment.yaml /
 RUN conda env update -f environment.yaml
 
 RUN mkdir /src
-RUN mkdir /src/models
 RUN mkdir /src/data
 WORKDIR /src

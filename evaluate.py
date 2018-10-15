@@ -8,6 +8,7 @@ import requests
 import subprocess
 import numpy as np
 import logging
+from tqdm import tqdm
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -61,7 +62,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_w
     answers = []
     questions = json.load(open(input_dir))['questions']
     start = time.time()
-    for question_idx, q in enumerate(questions):
+    for question_idx, q in enumerate(tqdm(questions)):
         answers.append([])
         sent_tokenizations = q['tokenizations']
         # get an answer every K characters

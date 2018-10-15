@@ -5,5 +5,6 @@ services:
     ports:
       - "4861:4861"
     volumes:
-      - .:/src
-    command: ["./cli", "web"]
+      - ./src/:/src
+      - ./data/:/src/data
+    command: ["bash", "run.sh"]

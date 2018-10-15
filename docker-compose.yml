@@ -5,5 +5,15 @@ services:
     ports:
       - "4861:4861"
     volumes:
-      - .:/src
-    command: ["./cli", "web"]
+      - ./src/:/src
+      - ./data/:/src/data
+    command: ["bash", "run.sh"]
+  eval:
+    image: "docker.io/entilzha/quizbowl:0.1"
+    volumes:
+      - ./src/:/src
+      - ./data/:/src/data
+      - ./:/eval
+    command: ["python", "/eval/evaluate.py", "--wait", "5", "--hostname", "qb", "--norun-web", "data/qanta.dev.2018.04.18.json"]
+    depends_on:
+      - "qb"
