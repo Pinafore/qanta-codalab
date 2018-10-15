@@ -15,7 +15,7 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 class CurveScore:
 
     def __init__(self):
-        with open('curve_pipeline.pkl', 'rb') as f:
+        with open('../curve_pipeline.pkl', 'rb') as f:
             self.pipeline = pickle.load(f)
 
     def get_weight(self, x):
@@ -36,16 +36,15 @@ class CurveScore:
 
 
 @click.command()
-@click.argument('code_dir')
 @click.argument('input_dir')
 @click.argument('n_questions', default=-1)
 @click.option('--char_step_size', default=25)
 @click.argument('output_dir', default='predictions.json')
 @click.argument('score_dir', default='scores.json')
-def evaluate(code_dir, input_dir,  n_questions, char_step_size,
+def evaluate(input_dir,  n_questions, char_step_size,
              output_dir, score_dir):
     web_proc = subprocess.Popen(
-        'bash {}/run.sh web'.format(code_dir), shell=True,
+        'bash run.sh', shell=True,
         # ['python', '-m', code_dir, 'web'],
         preexec_fn=os.setsid,
         stdout=subprocess.PIPE)
@@ -59,7 +58,6 @@ def evaluate(code_dir, input_dir,  n_questions, char_step_size,
     if n_questions > 0:
         questions = questions[:n_questions]
     for question_idx, q in enumerate(questions):
-        print('{} / {}'.format(question_idx, len(questions)))
         answers.append([])
         sent_tokenizations = q['tokenizations']
         # get an answer every K characters
