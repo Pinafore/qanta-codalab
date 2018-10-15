@@ -53,7 +53,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size):
 
     url = 'http://0.0.0.0:4861/api/1.0/quizbowl/act'
     answers = []
-    questions = json.load(open(input_dir))['questions'][:10]
+    questions = json.load(open(input_dir))['questions']
     start = time.time()
     for question_idx, q in enumerate(questions):
         answers.append([])
