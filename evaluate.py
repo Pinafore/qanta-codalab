@@ -10,9 +10,6 @@ import numpy as np
 import logging
 from tqdm import tqdm
 
-logging.getLogger("requests").setLevel(logging.WARNING)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
-
 
 elog = logging.getLogger('eval')
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -43,6 +40,28 @@ class CurveScore:
         return weight * result
 
 
+def start_server():
+    web_proc = subprocess.Popen(
+        'bash run.sh', shell=True,
+        preexec_fn=os.setsid
+    )
+    return web_proc
+
+
+def retry_get_url(url, retries=5, delay=1.5):
+    while retries > 0:
+        try:
+            if status.status_code == 200:
+                status = requests.get(status_url).json()
+                return status
+        except:
+            retries -= 1
+
+        if delay > 0:
+            time.sleep(delay)
+    return None
+
+
 @click.command()
 @click.argument('input_dir')
 @click.argument('output_dir', default='../predictions.json')
@@ -54,68 +73,68 @@ class CurveScore:
 @click.option('--curve-pkl', default='../curve_pipeline.pkl')
 def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
              norun_web, wait, curve_pkl):
-    if wait > 0:
-        time.sleep(wait)
-    if not norun_web:
-        web_proc = subprocess.Popen(
-            'bash run.sh', shell=True,
-            # ['python', '-m', code_dir, 'web'],
-            preexec_fn=os.setsid,
-            stdout=subprocess.PIPE)
-        output = ''
-        while 'Debug mode' not in output:
-            output = web_proc.stdout.readline().decode('utf-8')
+    try:
+        if not norun_web:
+            web_proc = start_server()
 
-    status_url = f'http://{hostname}:4861/api/1.0/quizbowl/status'
-    status = requests.get(status_url).json()
-    print(status)
+        if wait > 0:
+            time.sleep(wait)
 
-    url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
-    answers = []
-    questions = json.load(open(input_dir))['questions']
-    start = time.time()
-    elog.info('Collecting responses to questions')
-    for question_idx, q in enumerate(tqdm(questions)):
-        elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
-        answers.append([])
-        sent_tokenizations = q['tokenizations']
-        # get an answer every K characters
-        for sent_idx, (sent_st, sent_ed) in enumerate(sent_tokenizations):
-            for char_idx in range(sent_st, sent_ed, char_step_size):
-                query = {
-                    'question_idx': question_idx,
-                    'sent_index': sent_idx,
-                    'char_index': char_idx,
-                    'text': q['text'][:char_idx]
-                }
-                resp = requests.post(url, data=query).json()
-                query.update(resp)
-                answers[-1].append(query)
-    print((time.time() - start) / len(questions))
+        status_url = f'http://{hostname}:4861/api/1.0/quizbowl/status'
+        status = retry_get_url(status_url)
+        elog.info(f'API Status: {status}')
+        if status is None:
+            elog.warn('Failed to find a running web server beep boop. Something is probably about to have a RUD (rapid unscheduled disassembly)')
 
-    with open(output_dir, 'w') as f:
-        json.dump(answers, f)
+        url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
+        answers = []
+        with open(input_dir) as f:
+            questions = json.load(f)['questions']
+        start = time.time()
+        elog.info('Collecting responses to questions')
+        for question_idx, q in enumerate(tqdm(questions)):
+            elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
+            answers.append([])
+            sent_tokenizations = q['tokenizations']
+            # get an answer every K characters
+            for sent_idx, (sent_st, sent_ed) in enumerate(sent_tokenizations):
+                for char_idx in range(sent_st, sent_ed, char_step_size):
+                    query = {
+                        'question_idx': question_idx,
+                        'sent_index': sent_idx,
+                        'char_index': char_idx,
+                        'text': q['text'][:char_idx]
+                    }
+                    resp = requests.post(url, data=query).json()
+                    query.update(resp)
+                    answers[-1].append(query)
+        print((time.time() - start) / len(questions))
 
-    if not norun_web:
-        os.killpg(os.getpgid(web_proc.pid), signal.SIGTERM)
+        with open(output_dir, 'w') as f:
+            json.dump(answers, f)
 
-    elog.info('Computing curve score of results')
-    curve_score = CurveScore(curve_pkl=curve_pkl)
-    curve_results = []
-    eoq_results = []
-    for question_idx, guesses in enumerate(answers):
-        question = questions[question_idx]
-        guess = guesses[-1]['guess']
-        eoq_results.append(guess == question['page'])
-        curve_results.append(curve_score.score(guesses, question))
-    scores = {'eoq_acc': eoq_results, 'curve': curve_results}
-    with open(score_dir, 'w') as f:
-        json.dump(scores, f)
-    eval_out = {
-        'eoq_acc': sum(eoq_results) * 1.0 / len(eoq_results),
-        'curve': sum(curve_results) * 1.0 / len(curve_results),
-    }
-    print(json.dumps(eval_out))
+
+        elog.info('Computing curve score of results')
+        curve_score = CurveScore(curve_pkl=curve_pkl)
+        curve_results = []
+        eoq_results = []
+        for question_idx, guesses in enumerate(answers):
+            question = questions[question_idx]
+            guess = guesses[-1]['guess']
+            eoq_results.append(guess == question['page'])
+            curve_results.append(curve_score.score(guesses, question))
+        scores = {'eoq_acc': eoq_results, 'curve': curve_results}
+        with open(score_dir, 'w') as f:
+            json.dump(scores, f)
+        eval_out = {
+            'eoq_acc': sum(eoq_results) * 1.0 / len(eoq_results),
+            'curve': sum(curve_results) * 1.0 / len(curve_results),
+        }
+        print(json.dumps(eval_out))
+
+    finally:
+        if not norun_web:
+            os.killpg(os.getpgid(web_proc.pid), signal.SIGTERM)
 
 
 if __name__ == '__main__':
