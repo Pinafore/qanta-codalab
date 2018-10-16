@@ -79,7 +79,7 @@ def get_answer_single(url, questions, elog, char_step_size):
                     'char_index': char_idx,
                     'text': q['text'][:char_idx]
                 }
-                resp = requests.post(url, data=query).json()
+                resp = requests.post(url, json=query).json()
                 query.update(resp)
                 answers[-1].append(query)
     return answers
@@ -102,7 +102,7 @@ def get_answer_batch(url, questions, elog, batch_size):
                     'char_index': char_idx,
                     'text': q['text'][:char_idx]
                 }
-                resp = requests.post(url, data=query).json()
+                resp = requests.post(url, json=query).json()
                 query.update(resp)
                 answers[-1].append(query)
     return answers

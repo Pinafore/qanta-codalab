@@ -1,8 +1,7 @@
 # System Requirements
 
-All systems will take as input a question (sequence of words), and output
-output an answer guess (a Wikipedia entity) and a binary decision
-whether to buzz or not.
+All systems will take as input a question (sequence of words), and output an
+answer guess (a Wikipedia entity) and a binary decision whether to buzz or not.
 
 For example, this command queries a system running locally for what it thinks
 the best current answer is as well as whether it is deciding to buzz on the
@@ -58,7 +57,10 @@ The first requirement we enforce on all systems is that if the current working
 directory is the contents of `src/`, and if we run `bash run.sh` that it will
 start a web server satisfying the input/output formats outlined above.
 
-The second requirement we enforce is that all systems should support a status API:
+The second requirement we enforce is that all systems should support a status
+API. When we startup your system we will query this API until it is running and
+returning a valid response. If it takes to long to detect then the evaluation
+script will return an error.
 
 * URL: `/api/1.0/quizbowl/status`
 * `ready`: return True if ready to accept requests
