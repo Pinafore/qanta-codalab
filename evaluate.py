@@ -51,9 +51,9 @@ def start_server():
 def retry_get_url(url, retries=5, delay=1.5):
     while retries > 0:
         try:
-            if status.status_code == 200:
-                status = requests.get(status_url).json()
-                return status
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response.json()
         except:
             retries -= 1
 
