@@ -48,14 +48,15 @@ def start_server():
     return web_proc
 
 
-def retry_get_url(url, retries=5, delay=1.5):
+def retry_get_url(url, retries=5, delay=3):
     while retries > 0:
         try:
             response = requests.get(url)
             if response.status_code == 200:
                 return response.json()
-        except:
+        except requests.exceptions.ConnectionError as e:
             retries -= 1
+            elog.warn(e)
 
         if delay > 0:
             time.sleep(delay)
@@ -130,15 +131,18 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
         elog.info(f'API Status: {status}')
         if status is None:
             elog.warn('Failed to find a running web server beep boop. Something is probably about to have a RUD (rapid unscheduled disassembly)')
+        else:
+            print(status)
 
         url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
         with open(input_dir) as f:
             questions = json.load(f)['questions']
-        if status['batch']:
-            answers = get_answer_batch(url, questions, elog, char_step_size,
-                                       status['batch_size'])
-        else:
-            answers = get_answer_single(url, questions, elog, char_step_size)
+        # if status['batch']:
+        #     answers = get_answer_batch(url, questions, elog, char_step_size,
+        #                                status['batch_size'])
+        # else:
+        #     answers = get_answer_single(url, questions, elog, char_step_size)
+        answers = get_answer_single(url, questions, elog, char_step_size)
 
         with open(output_dir, 'w') as f:
             json.dump(answers, f)
