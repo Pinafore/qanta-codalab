@@ -62,6 +62,51 @@ def retry_get_url(url, retries=5, delay=1.5):
     return None
 
 
+def get_answer_single(url, questions, elog, char_step_size):
+    elog.info('Collecting responses to questions')
+    answers = []
+    for question_idx, q in enumerate(tqdm(questions)):
+        elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
+        answers.append([])
+        sent_tokenizations = q['tokenizations']
+        # get an answer every K characters
+        for sent_idx, (sent_st, sent_ed) in enumerate(sent_tokenizations):
+            for char_idx in range(sent_st, sent_ed, char_step_size):
+                query = {
+                    'question_idx': question_idx,
+                    'sent_index': sent_idx,
+                    'char_index': char_idx,
+                    'text': q['text'][:char_idx]
+                }
+                resp = requests.post(url, data=query).json()
+                query.update(resp)
+                answers[-1].append(query)
+    return answers
+
+
+def get_answer_batch(url, questions, elog, batch_size):
+    elog.info('Collecting responses to questions in batches', batch_size)
+    answers = []
+    batch_ids = list(range(0, len(questions), batch_size))
+    for batch_idx in tqdm(batch_ids):
+        qs = questions[batch_idx: batch_idx + batch_size]
+        answers.append([] for _ in qs)
+        # TODO I don't think it's possible to batch if we do this
+        sent_tokenizations = [q['tokenizations'] for q in qs]
+        for sent_idx, (sent_st, sent_ed) in enumerate(sent_tokenizations):
+            for char_idx in range(sent_st, sent_ed, char_step_size):
+                query = {
+                    'question_idx': question_idx,
+                    'sent_index': sent_idx,
+                    'char_index': char_idx,
+                    'text': q['text'][:char_idx]
+                }
+                resp = requests.post(url, data=query).json()
+                query.update(resp)
+                answers[-1].append(query)
+    return answers
+
+
 @click.command()
 @click.argument('input_dir')
 @click.argument('output_dir', default='../predictions.json')
@@ -87,32 +132,16 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
             elog.warn('Failed to find a running web server beep boop. Something is probably about to have a RUD (rapid unscheduled disassembly)')
 
         url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
-        answers = []
         with open(input_dir) as f:
             questions = json.load(f)['questions']
-        start = time.time()
-        elog.info('Collecting responses to questions')
-        for question_idx, q in enumerate(tqdm(questions)):
-            elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
-            answers.append([])
-            sent_tokenizations = q['tokenizations']
-            # get an answer every K characters
-            for sent_idx, (sent_st, sent_ed) in enumerate(sent_tokenizations):
-                for char_idx in range(sent_st, sent_ed, char_step_size):
-                    query = {
-                        'question_idx': question_idx,
-                        'sent_index': sent_idx,
-                        'char_index': char_idx,
-                        'text': q['text'][:char_idx]
-                    }
-                    resp = requests.post(url, data=query).json()
-                    query.update(resp)
-                    answers[-1].append(query)
-        print((time.time() - start) / len(questions))
+        if status['batch']:
+            answers = get_answer_batch(url, questions, elog, char_step_size,
+                                       status['batch_size'])
+        else:
+            answers = get_answer_single(url, questions, elog, char_step_size)
 
         with open(output_dir, 'w') as f:
             json.dump(answers, f)
-
 
         elog.info('Computing curve score of results')
         curve_score = CurveScore(curve_pkl=curve_pkl)
