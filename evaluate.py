@@ -52,7 +52,8 @@ class CurveScore:
 @click.option('--norun-web', default=False, is_flag=True)
 @click.option('--wait', default=0, type=int)
 @click.option('--curve-pkl', default='../curve_pipeline.pkl')
-def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_web, wait, curve_pkl):
+def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
+             norun_web, wait, curve_pkl):
     if wait > 0:
         time.sleep(wait)
     if not norun_web:
@@ -64,6 +65,10 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_w
         output = ''
         while 'Debug mode' not in output:
             output = web_proc.stdout.readline().decode('utf-8')
+
+    status_url = f'http://{hostname}:4861/api/1.0/quizbowl/status'
+    status = requests.get(status_url).json()
+    print(status)
 
     url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
     answers = []
@@ -83,8 +88,8 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname, norun_w
                     'char_index': char_idx,
                     'text': q['text'][:char_idx]
                 }
-                resp = requests.post(url, data=query).content.decode('utf-8')
-                query.update(json.loads(resp))
+                resp = requests.post(url, data=query).json()
+                query.update(resp)
                 answers[-1].append(query)
     print((time.time() - start) / len(questions))
 
