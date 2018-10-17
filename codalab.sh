@@ -3,27 +3,17 @@
 # Codalab makes bundles write only
 # So we copy everything into the write place
 # Similar to how we have docker-compose setup
-mkdir run
-mkdir run/data
+mkdir web
+cp -RL src/* web
+cd web
 
-cp -RL src/* run
-cp evaluate.py run/evaluate.py
-cp curve_pipeline.pkl run/curve_pipeline.pkl
-cp qanta.dev.2018.04.18.json run/data/qanta.dev.2018.04.18.json
-
-# Run the evaluation
-cd run
+# Its easier to start the web API from bash and get proper logging
 bash run.sh &
 WEB_PID=$!
-python evaluate.py data/qanta.dev.2018.04.18.json --char_step_size 200 --norun-web --wait 5
-kill $WEB_PID
-
-# Copy outputs so that codalab can pull it out of the container
-cp scores.json ..
-cp predictions.json ..
-cp evaluation.log ..
-
-# Be nice and cleanup
 cd ..
-rm -rf run
+
+# Run the evaluation, then cleanup
+python evaluate.py --char_step_size 200 --norun-web --wait 5 --curve-pkl curve_pipeline.pkl qanta.dev.2018.04.18.json 
+kill $WEB_PID
+rm -rf web
 
