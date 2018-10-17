@@ -118,13 +118,13 @@ def get_answer_batch(url, questions, elog, char_step_size, batch_size):
 
 @click.command()
 @click.argument('input_dir')
-@click.argument('output_dir', default='../predictions.json')
-@click.argument('score_dir', default='../scores.json')
+@click.argument('output_dir', default='predictions.json')
+@click.argument('score_dir', default='scores.json')
 @click.option('--char_step_size', default=25)
 @click.option('--hostname', default='0.0.0.0')
 @click.option('--norun-web', default=False, is_flag=True)
 @click.option('--wait', default=0, type=int)
-@click.option('--curve-pkl', default='../curve_pipeline.pkl')
+@click.option('--curve-pkl', default='curve_pipeline.pkl')
 def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
              norun_web, wait, curve_pkl):
     try:
