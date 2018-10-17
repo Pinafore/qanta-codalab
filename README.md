@@ -158,7 +158,11 @@ At a high level:
 3. The evaluation script will run questions against the web API endpoint `/api/1.0/quizbowl/act`
 4. The evaluation script will output your scores to the standard out locally, or post to the leaderboard when run on codalab.
 
-# Dockerhub Maintainer Notes
+
+
+# Maintainer Notes
+
+## Dockerhub
 
 The default docker-compose file references the published image for quizbowl at
 https://hub.docker.com/r/entilzha/quizbowl/
@@ -170,4 +174,14 @@ commands in sequence:
 docker-compose -f docker-compose.dev.yml build
 docker tag qanta-codalab_qb:latest entilzha/quizbowl
 docker push entilzha/quizbowl
+```
+
+## Codalab CLI
+
+Install with anaconda python using
+
+```bash
+$ conda env create -f codalab_cl_env.yml
+$ source activate codalab
+$ #config.fish: source ~/anaconda3/etc/fish/conf.d/conda.fish
 ```
