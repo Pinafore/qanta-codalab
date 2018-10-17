@@ -11,11 +11,11 @@ import logging
 from tqdm import tqdm
 
 
-elog = logging.getLogger('eval')
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh = logging.FileHandler('evaluation.log')
-fh.setLevel(logging.INFO)
-fh.setFormatter(formatter)
+# elog = logging.getLogger('eval')
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# fh = logging.FileHandler('../evaluation.log')
+# fh.setLevel(logging.INFO)
+# fh.setFormatter(formatter)
 
 
 class CurveScore:
@@ -42,7 +42,7 @@ class CurveScore:
 
 def start_server():
     web_proc = subprocess.Popen(
-        'bash run.sh', shell=True,
+        'bash src/run.sh', shell=True,
         preexec_fn=os.setsid
     )
     return web_proc
@@ -56,7 +56,7 @@ def retry_get_url(url, retries=5, delay=3):
                 return response.json()
         except requests.exceptions.ConnectionError as e:
             retries -= 1
-            elog.warn(e)
+            # elog.warn(e)
 
         if delay > 0:
             time.sleep(delay)
@@ -78,10 +78,10 @@ def get_question_query(qid, question, char_idx):
 
 
 def get_answer_single(url, questions, elog, char_step_size):
-    elog.info('Collecting responses to questions')
+    # elog.info('Collecting responses to questions')
     answers = []
     for question_idx, q in enumerate(tqdm(questions)):
-        elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
+        # elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
         answers.append([])
         # get an answer every K characters
         for char_idx in range(1, len(q['text']) + char_step_size,
@@ -94,7 +94,7 @@ def get_answer_single(url, questions, elog, char_step_size):
 
 
 def get_answer_batch(url, questions, elog, char_step_size, batch_size):
-    elog.info('Collecting responses to questions in batches', batch_size)
+    # elog.info('Collecting responses to questions in batches', batch_size)
     answers = []
     batch_ids = list(range(0, len(questions), batch_size))
     for batch_idx in tqdm(batch_ids):
@@ -136,26 +136,34 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
 
         status_url = f'http://{hostname}:4861/api/1.0/quizbowl/status'
         status = retry_get_url(status_url)
-        elog.info(f'API Status: {status}')
+        # elog.info(f'API Status: {status}')
         if status is None:
-            elog.warn('Failed to find a running web server beep boop. Something is probably about to have a RUD (rapid unscheduled disassembly)')
+            pass
+            # elog.warn('Failed to find a running web server beep boop. Something is probably about to have a RUD (rapid unscheduled disassembly)')
         else:
-            print(status)
+            pass
+            # print(status)
 
         with open(input_dir) as f:
-            questions = json.load(f)['questions']
+            questions = json.load(f)['questions'][:10]
         if status is not None and status['batch'] is True:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/batch_act'
-            answers = get_answer_batch(url, questions, elog, char_step_size,
+            answers = get_answer_batch(url, questions,
+                                       None,
+                                       # elog, 
+                                       char_step_size,
                                        status['batch_size'])
         else:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
-            answers = get_answer_single(url, questions, elog, char_step_size)
+            answers = get_answer_single(url, questions,
+                                        None,
+                                        # elog,
+                                        char_step_size)
 
         with open(output_dir, 'w') as f:
             json.dump(answers, f)
 
-        elog.info('Computing curve score of results')
+        # elog.info('Computing curve score of results')
         curve_score = CurveScore(curve_pkl=curve_pkl)
         curve_results = []
         eoq_results = []
