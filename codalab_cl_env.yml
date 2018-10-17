@@ -1,0 +1,6 @@
+name: codalab
+dependencies:
+  - python=2.7
+  - pip:
+    - codalab
+    - codalabworker
