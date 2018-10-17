@@ -17,6 +17,8 @@ from tqdm import tqdm
 # fh.setLevel(logging.INFO)
 # fh.setFormatter(formatter)
 
+logging.getLogger('requests').setLevel(logging.CRITICAL)
+
 
 class CurveScore:
     def __init__(self, curve_pkl='../curve_pipeline.pkl'):
@@ -172,13 +174,15 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
             guess = guesses[-1]['guess']
             eoq_results.append(guess == question['page'])
             curve_results.append(curve_score.score(guesses, question))
-        scores = {'eoq_acc': eoq_results, 'curve': curve_results}
-        with open(score_dir, 'w') as f:
-            json.dump(scores, f)
+        # scores = {'eoq_acc': eoq_results, 'curve': curve_results}
+        # with open(score_dir, 'w') as f:
+        #     json.dump(scores, f)
         eval_out = {
             'eoq_acc': sum(eoq_results) * 1.0 / len(eoq_results),
             'curve': sum(curve_results) * 1.0 / len(curve_results),
         }
+        with open(score_dir, 'w') as f:
+            json.dump(eval_out, f)
         print(json.dumps(eval_out))
 
     finally:
