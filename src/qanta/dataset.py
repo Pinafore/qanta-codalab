@@ -2,7 +2,7 @@ from typing import List, Dict, Iterable, Optional, Tuple, NamedTuple
 import os
 import json
 
-from util import QANTA_MAPPED_DATASET_PATH
+from qanta.util import QANTA_MAPPED_DATASET_PATH
 
 GUESSER_TRAIN_FOLD = 'guesstrain'
 BUZZER_TRAIN_FOLD = 'buzztrain'

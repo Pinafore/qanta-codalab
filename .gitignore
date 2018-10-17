@@ -1,3 +1,5 @@
+src/predictions.json
+src/scores.json
 data/*
 models/*
 *.pickle
