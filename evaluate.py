@@ -145,7 +145,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
             # print(status)
 
         with open(input_dir) as f:
-            questions = json.load(f)['questions'][:10]
+            questions = json.load(f)['questions']
         if status is not None and status['batch'] is True:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/batch_act'
             answers = get_answer_batch(url, questions,
