@@ -9,11 +9,11 @@ from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 from flask import Flask, jsonify, request
 
-from qanta import util
-from qanta.dataset import QuizBowlDataset
+import util
+from dataset import QuizBowlDataset
 
 
-MODEL_PATH = 'qanta/tfidf.pickle'
+MODEL_PATH = 'src/tfidf.pickle'
 BUZZ_NUM_GUESSES = 10
 BUZZ_THRESHOLD = 0.3
 

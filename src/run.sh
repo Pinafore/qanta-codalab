@@ -1,3 +1,3 @@
 #/usr/bin/env bash
 
-python -m qanta.tfidf web
+python src/tfidf.py web
