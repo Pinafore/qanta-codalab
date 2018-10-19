@@ -97,7 +97,7 @@ These commands are structured via `docker-compose CMD CONTAINER ARGS` where
 `ARGS` runs inside of the container.
 
 1. `docker-compose run qb ./cli download`: This will download the training data to `data/`
-2. `docker-compose run qb ./cli train`: This will train a model and place it in `src/qanta/tfidf.pickle`
+2. `docker-compose run qb ./cli train`: This will train a model and place it in `src/tfidf.pickle`
 3. `docker-compose up`: This will start the web server in the foreground, `-d` for background, `ctrl-c` to stop
 4. `docker-compose run eval`: This will run the evaluation script
 
@@ -185,3 +185,7 @@ $ conda env create -f codalab_cl_env.yml
 $ source activate codalab
 $ #config.fish: source ~/anaconda3/etc/fish/conf.d/conda.fish
 ```
+## FAQ
+1. When training locally in docker, i got the training process killed.
+A: This happened in Mac users. You need to increase the memory in docker configuration. See the instructions from this website. https://lucianomolinari.com/2017/06/11/containers-being-killed-on-docker-for-mac/ 
+
