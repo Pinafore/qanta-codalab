@@ -80,6 +80,8 @@ and a threshold-based buzzer.
 You will only need to have [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/)
 installed to run this reference system. You may optionally wish to install [httpie](https://httpie.org) to test the web api.
 
+IMPORTANT FOR MAC USERS: If you keep getting messages indicating a container was "Killed", [follow these instructions](https://lucianomolinari.com/2017/06/11/containers-being-killed-on-docker-for-mac/) to allow Docker to use more CPU/RAM.
+
 ## Running
 
 To run the reference system we have provided four easy commands to run. All of
