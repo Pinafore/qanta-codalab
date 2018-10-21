@@ -13,7 +13,7 @@ WEB_PID=$!
 cd ..
 
 # Run the evaluation, then cleanup
-python evaluate.py --char_step_size 200 --norun-web --wait 5 --curve-pkl curve_pipeline.pkl qanta.dev.2018.04.18.json
+python evaluate.py --char_step_size 60 --norun-web --wait 5 --curve-pkl curve_pipeline.pkl qanta.dev.2018.04.18.json
 kill $WEB_PID
 rm -rf web
 
