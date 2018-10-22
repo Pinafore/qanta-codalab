@@ -171,8 +171,11 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
         curve_results = []
         for question_idx, guesses in enumerate(answers):
             question = questions[question_idx]
-            sent1_idx = questions[question_idx]['tokenizations'][0][1]
-            sent1_guess = guesses[sent1_idx]['guess']
+            sent1_guess = None
+            for g in guesses:
+                if g['sent_index'] == 1:
+                    sent1_guess = g['guess']
+                    break
             sent1_results.append(sent1_guess == question['page'])
             eoq_results.append(guesses[-1]['guess'] == question['page'])
             curve_results.append(curve_score.score(guesses, question))
