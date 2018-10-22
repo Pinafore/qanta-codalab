@@ -166,17 +166,18 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
 
         elog.info('Computing curve score of results')
         curve_score = CurveScore(curve_pkl=curve_pkl)
-        curve_results = []
+        sent1_results = []
         eoq_results = []
+        curve_results = []
         for question_idx, guesses in enumerate(answers):
             question = questions[question_idx]
-            guess = guesses[-1]['guess']
-            eoq_results.append(guess == question['page'])
+            sent1_idx = questions[question_idx]['tokenizations'][0][1]
+            sent1_guess = guesses[sent1_idx]['guess']
+            sent1_results.append(sent1_guess == question['page'])
+            eoq_results.append(guesses[-1]['guess'] == question['page'])
             curve_results.append(curve_score.score(guesses, question))
-        # scores = {'eoq_acc': eoq_results, 'curve': curve_results}
-        # with open(score_dir, 'w') as f:
-        #     json.dump(scores, f)
         eval_out = {
+            'sent1_acc': sum(sent1_results) * 1.0 / len(sent1_results),
             'eoq_acc': sum(eoq_results) * 1.0 / len(eoq_results),
             'curve': sum(curve_results) * 1.0 / len(curve_results),
         }
