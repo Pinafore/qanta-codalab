@@ -133,8 +133,10 @@ def check_port(hostname, port):
 @click.option('--norun-web', default=False, is_flag=True)
 @click.option('--wait', default=0, type=int)
 @click.option('--curve-pkl', default='curve_pipeline.pkl')
+@click.option('--retries', default=20)
+@click.option('--retry-delay', default=3)
 def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
-             norun_web, wait, curve_pkl):
+             norun_web, wait, curve_pkl, retries, retry_delay):
     try:
         if not norun_web:
             web_proc = start_server()
@@ -143,7 +145,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
             time.sleep(wait)
 
         status_url = f'http://{hostname}:4861/api/1.0/quizbowl/status'
-        status = retry_get_url(status_url)
+        status = retry_get_url(status_url, retries=retries, delay=retry_delay)
         elog.info(f'API Status: {status}')
         if status is None:
             elog.warning('Failed to find a running web server beep boop, prepare for RUD')
