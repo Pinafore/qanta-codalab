@@ -38,10 +38,20 @@ class CurveScore:
         if True not in buzzes:
             return 0
         buzz_index = buzzes.index(True)
-        rel_position = guesses[buzz_index]['char_index'] / char_length
+        rel_position = (1.0 * guesses[buzz_index]['char_index']) / char_length
         weight = self.get_weight(rel_position)
         result = guesses[buzz_index]['guess'] == question['page']
         return weight * result
+
+    def score_optimal(self, guesses, question):
+        '''score with an optimal buzzer'''
+        char_length = len(question['text'])
+        buzz_index = char_length
+        for g in guesses[::-1]:
+            if g['guess'] == question['page']:
+                buzz_index = g['char_index']
+        rel_position = (1.0 * buzz_index) / char_length
+        return self.get_weight(rel_position)
 
 
 def start_server():
@@ -168,23 +178,27 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
 
         elog.info('Computing curve score of results')
         curve_score = CurveScore(curve_pkl=curve_pkl)
-        sent1_results = []
-        eoq_results = []
-        curve_results = []
+        first_acc = []
+        end_acc = []
+        ew = []
+        ew_opt = []
         for question_idx, guesses in enumerate(answers):
             question = questions[question_idx]
-            sent1_guess = None
+            answer = question['page']
+            first_guess = None
             for g in guesses:
                 if g['sent_index'] == 1:
-                    sent1_guess = g['guess']
+                    first_guess = g['guess']
                     break
-            sent1_results.append(sent1_guess == question['page'])
-            eoq_results.append(guesses[-1]['guess'] == question['page'])
-            curve_results.append(curve_score.score(guesses, question))
+            first_acc.append(first_guess == answer)
+            end_acc.append(guesses[-1]['guess'] == answer)
+            ew.append(curve_score.score(guesses, question))
+            ew_opt.append(curve_score.score_optimal(guesses, question))
         eval_out = {
-            'sent1_acc': sum(sent1_results) * 1.0 / len(sent1_results),
-            'eoq_acc': sum(eoq_results) * 1.0 / len(eoq_results),
-            'curve': sum(curve_results) * 1.0 / len(curve_results),
+            'first_acc': sum(first_acc) * 1.0 / len(first_acc),
+            'end_acc': sum(end_acc) * 1.0 / len(end_acc),
+            'expected_wins': sum(ew) * 1.0 / len(ew),
+            'expected_wins_optimal': sum(ew_opt) * 1.0 / len(ew_opt),
         }
         with open(score_dir, 'w') as f:
             json.dump(eval_out, f)
