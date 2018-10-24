@@ -19,7 +19,7 @@ the best current answer is as well as whether it is deciding to buzz on the
 answer.
 
 ```bash
-$ http --form POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
+$ http POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
 HTTP/1.0 200 OK
 Content-Length: 41
 Content-Type: application/json
@@ -122,7 +122,7 @@ docker-compose up
 And then the `httpie` command from before:
 
 ```bash
-$ http --form POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
+$ http POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
 HTTP/1.0 200 OK
 Content-Length: 41
 Content-Type: application/json
