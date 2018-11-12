@@ -1,0 +1,25 @@
+name: qb
+dependencies:
+  - python=3.6
+  - pytorch=0.4.1
+  - numpy
+  - scipy
+  - pandas
+  - scikit-learn
+  - nltk
+  - requests
+  - click==7.0.*
+  - flask
+  - ipython
+  - tensorflow==1.11.*
+  - pylint
+  - cloudpickle
+  - flask
+  - click
+  - tensorboardx
+  - pip:
+    - allennlp==0.7.*
+    - overrides
+channels:
+  - pytorch
+  - conda-forge

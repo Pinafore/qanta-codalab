@@ -1,0 +1,12 @@
+version: '3'
+services:
+  qb:
+    build:
+      context: .
+      dockerfile: Dockerfile-gpu
+    ports:
+      - "4861:4861"
+    volumes:
+      - ./src/:/src
+      - ./data/:/src/data
+    command: ["bash", "run.sh"]
