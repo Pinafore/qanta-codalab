@@ -1,15 +1,25 @@
+This is a simple, baseline system that does well on the question answering task "quiz bowl".  This system generates the baseline score on our leaderboard and demonstrates the IO profile we expect of Docker container submission.
+
+
+# Reference System
+
+We provide sample code which when combined with the provided docker container
+can answer Quiz Bowl questions. This should provide an example of how the
+codalab server interacts with the container as well as a simple yet
+surprisingly effective baseline. The simple system consists of a TF-IDF guesser
+and a threshold-based buzzer.
+
 # System Requirements
 
-All systems will take as input a question (sequence of words), and output
-output an answer guess (a Wikipedia entity) and a binary decision
-whether to buzz or not.
+All systems will take as input a question (sequence of words), and output an
+answer guess (a Wikipedia entity) and a binary decision whether to buzz or not.
 
 For example, this command queries a system running locally for what it thinks
 the best current answer is as well as whether it is deciding to buzz on the
 answer.
 
 ```bash
-$ http --form POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
+$ http POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
 HTTP/1.0 200 OK
 Content-Length: 41
 Content-Type: application/json
@@ -58,25 +68,23 @@ The first requirement we enforce on all systems is that if the current working
 directory is the contents of `src/`, and if we run `bash run.sh` that it will
 start a web server satisfying the input/output formats outlined above.
 
-The second requirement we enforce is that all systems should support a status API:
+The second requirement we enforce is that all systems should support a status
+API. When we startup your system we will query this API until it is running and
+returning a valid response. If it takes to long to detect then the evaluation
+script will return an error.
 
 * URL: `/api/1.0/quizbowl/status`
 * `ready`: return True if ready to accept requests
 * `batch`: True if model accepts batch API (see farther down), False otherwise
 * `batch_size`: If `batch` is true, an integer indicating max batch size
 
-# Reference System
-
-We provide sample code which when combined with the provided docker container
-can answer Quiz Bowl questions. This should provide an example of how the
-codalab server interacts with the container as well as a simple yet
-surprisingly effective baseline. The simple system consists of a TF-IDF guesser
-and a threshold-based buzzer.
 
 ## Installation
 
 You will only need to have [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/)
 installed to run this reference system. You may optionally wish to install [httpie](https://httpie.org) to test the web api.
+
+IMPORTANT FOR MAC USERS: If you keep getting messages indicating a container was "Killed", [follow these instructions](https://lucianomolinari.com/2017/06/11/containers-being-killed-on-docker-for-mac/) to allow Docker to use more CPU/RAM.
 
 ## Running
 
@@ -95,7 +103,7 @@ These commands are structured via `docker-compose CMD CONTAINER ARGS` where
 `ARGS` runs inside of the container.
 
 1. `docker-compose run qb ./cli download`: This will download the training data to `data/`
-2. `docker-compose run qb ./cli train`: This will train a model and place it in `src/qanta/tfidf.pickle`
+2. `docker-compose run qb ./cli train`: This will train a model and place it in `src/tfidf.pickle`
 3. `docker-compose up`: This will start the web server in the foreground, `-d` for background, `ctrl-c` to stop
 4. `docker-compose run eval`: This will run the evaluation script
 
@@ -114,7 +122,7 @@ docker-compose up
 And then the `httpie` command from before:
 
 ```bash
-$ http --form POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
+$ http POST http://0.0.0.0:4861/api/1.0/quizbowl/act text='Name the the inventor of general relativity and the photoelectric effect'
 HTTP/1.0 200 OK
 Content-Length: 41
 Content-Type: application/json
@@ -156,7 +164,11 @@ At a high level:
 3. The evaluation script will run questions against the web API endpoint `/api/1.0/quizbowl/act`
 4. The evaluation script will output your scores to the standard out locally, or post to the leaderboard when run on codalab.
 
-# Dockerhub Maintainer Notes
+
+
+# Maintainer Notes
+
+## Dockerhub
 
 The default docker-compose file references the published image for quizbowl at
 https://hub.docker.com/r/entilzha/quizbowl/
@@ -169,3 +181,17 @@ docker-compose -f docker-compose.dev.yml build
 docker tag qanta-codalab_qb:latest entilzha/quizbowl
 docker push entilzha/quizbowl
 ```
+
+## Codalab CLI
+
+Install with anaconda python using
+
+```bash
+$ conda env create -f codalab_cl_env.yml
+$ source activate codalab
+$ #config.fish: source ~/anaconda3/etc/fish/conf.d/conda.fish
+```
+## FAQ
+1. When training locally in docker, i got the training process killed.
+A: This happened in Mac users. You need to increase the memory in docker configuration. See the instructions from this website. https://lucianomolinari.com/2017/06/11/containers-being-killed-on-docker-for-mac/ 
+
