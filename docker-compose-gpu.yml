@@ -20,7 +20,7 @@ services:
       "--wait", "5",
       "--hostname", "qb",
       "--norun-web",
-      "--char_step_size", "600",
+      "--char_step_size", "60",
       "data/qanta.dev.2018.04.18.json"
     ]
     depends_on:
