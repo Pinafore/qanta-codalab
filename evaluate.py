@@ -11,7 +11,7 @@ import logging
 import socket
 import errno
 from tqdm import tqdm
-import urllib.request
+
 
 
 elog = logging.getLogger('eval')
@@ -93,7 +93,7 @@ def get_question_query(qid, question, char_idx, wiki_paragraphs=None):
             'text': question['text'][:char_idx]
     }
     if wiki_paragraphs:
-        query['wiki_paragraphs'] = wiki_paragraphs[str(question['qanta_id'])][:sent_idx]
+        query['wiki_paragraphs'] = wiki_paragraphs[question['qanta_id']][:sent_idx]
 
     return query
 
@@ -180,8 +180,11 @@ def evaluate(input_dir, retrieved_paragraphs_path, output_dir, score_dir, char_s
 
 
         if include_wiki_paragraphs:
-            with urllib.request.urlopen(retrieved_paragraphs_path) as f:
-                retrieved_paragraphs = json.load(f)
+            retrieved_paragraphs = {}
+            with open(retrieved_paragraphs_path) as f:
+                for ln in f:
+                    q_paragraphs = json.loads(ln)
+                    retrieved_paragraphs[q_paragraphs['qanta_id']] = q_paragraphs['annotated_paras']
         else:
             retrieved_paragraphs = None
 

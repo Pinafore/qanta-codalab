@@ -113,7 +113,7 @@ These commands are structured via `docker-compose CMD CONTAINER ARGS` where
 `CMD` is a `docker-compose` command, `CONTAINER` is either `qb` or `eval`, and
 `ARGS` runs inside of the container.
 
-1. `docker-compose run qb ./cli download`: This will download the training data to `data/`
+1. `docker-compose run qb ./cli download`: This will download the training data to `data/`. Add flag `--retrieve-paragraphs` to download retrieved Wikipedia paragraphs.
 2. `docker-compose run qb ./cli train`: This will train a model and place it in `src/tfidf.pickle`
 3. `docker-compose up`: This will start the web server in the foreground, `-d` for background, `ctrl-c` to stop
 4. `docker-compose run eval`: This will run the evaluation script

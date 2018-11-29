@@ -1,6 +1,7 @@
 import click
 import subprocess
-from os import path, makedirs
+from os import path, makedirs, remove
+import zipfile
 
 
 DS_VERSION = '2018.04.18'
@@ -15,6 +16,20 @@ FILES = [
     QANTA_TRAIN_DATASET_PATH,
     QANTA_DEV_DATASET_PATH,
     QANTA_TEST_DATASET_PATH
+]
+
+OBJSTORE_PREFIX = 'https://obj.umiacs.umd.edu/processed_tossup/'
+QANTA_TRAIN_RETRIEVED_PARAGRAPHS = f'qanta.train.paragraphs.{DS_VERSION}.jsonl.zip'
+QANTA_DEV_RETRIEVED_PARAGRAPHS = f'qanta.dev.paragraphs.{DS_VERSION}.jsonl.zip'
+QANTA_TEST_RETRIEVED_PARAGRAPHS = f'qanta.test.paragraphs.{DS_VERSION}.jsonl.zip'
+
+
+
+
+PARAGRAPH_FILES = [
+    QANTA_TRAIN_RETRIEVED_PARAGRAPHS,
+    QANTA_DEV_RETRIEVED_PARAGRAPHS,
+    QANTA_TEST_RETRIEVED_PARAGRAPHS
 ]
 
 
@@ -32,9 +47,16 @@ def download_file(http_location, local_location):
     shell(f'wget -O {local_location} {http_location}')
 
 
-def download(local_qanta_prefix):
+def download(local_qanta_prefix, retrieve_paragraphs=False):
     """
     Download the qanta dataset
     """
     for s3_file, local_file in make_file_pairs(FILES, S3_HTTP_PREFIX, local_qanta_prefix):
         download_file(s3_file, local_file)
+
+    if retrieve_paragraphs:
+        for objstore_file, local_file in make_file_pairs(PARAGRAPH_FILES, OBJSTORE_PREFIX, local_qanta_prefix):
+            download_file(objstore_file, local_file)
+            with zipfile.ZipFile(local_file, 'r') as zip_file:    
+                zip_file.extractall(local_qanta_prefix)
+                remove(local_file)

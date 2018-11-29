@@ -106,7 +106,8 @@ def create_app(enable_batch=True):
         return jsonify({
             'batch': enable_batch,
             'batch_size': 200,
-            'ready': True
+            'ready': True,
+            'include_wiki_paragraphs': False
         })
 
     @app.route('/api/1.0/quizbowl/batch_act', methods=['POST'])
@@ -151,11 +152,12 @@ def train():
 
 @cli.command()
 @click.option('--local-qanta-prefix', default='data/')
-def download(local_qanta_prefix):
+@click.option('--retrieve-paragraphs', default=False, is_flag=True)
+def download(local_qanta_prefix, retrieve_paragraphs):
     """
     Run once to download qanta data to data/. Runs inside the docker container, but results save to host machine
     """
-    util.download(local_qanta_prefix)
+    util.download(local_qanta_prefix, retrieve_paragraphs)
 
 
 if __name__ == '__main__':
