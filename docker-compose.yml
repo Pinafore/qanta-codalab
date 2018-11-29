@@ -21,7 +21,7 @@ services:
       "--hostname", "qb",
       "--norun-web",
       "--char_step_size", "60",
-      "--input_with_paragraphs", "data/qanta.dev.2018.04.18.with.paragraphs.json",
+      "--retrieved_paragraphs_path", "https://obj.umiacs.umd.edu/processed_tossup/filtered_paragraph_dev.json",
       "data/qanta.dev.2018.04.18.json"
     ]
     depends_on:
