@@ -79,7 +79,7 @@ def retry_get_url(url, retries=5, delay=3):
     return None
 
 
-def get_question_query(qid, question, char_idx, wiki_paragraphs=None):
+def get_question_query(qid, question, char_idx, wiki_paragraphs=False):
     char_idx = min(char_idx, len(question['text']))
 
     for sent_idx, (st, ed) in enumerate(question['tokenizations']):
@@ -93,13 +93,13 @@ def get_question_query(qid, question, char_idx, wiki_paragraphs=None):
             'text': question['text'][:char_idx]
     }
     if wiki_paragraphs:
-        query['wiki_paragraphs'] = wiki_paragraphs[question['qanta_id']][:sent_idx]
+        query['wiki_paragraphs'] = question['annotated_paras'][:sent_idx]
 
     return query
 
 
 
-def get_answer_single(url, questions, char_step_size, wiki_paragraphs=None):
+def get_answer_single(url, questions, char_step_size, wiki_paragraphs=False):
     elog.info('Collecting responses to questions')
     answers = []
     for question_idx, q in enumerate(tqdm(questions)):
@@ -115,7 +115,7 @@ def get_answer_single(url, questions, char_step_size, wiki_paragraphs=None):
     return answers
 
 
-def get_answer_batch(url, questions, char_step_size, batch_size, wiki_paragraphs=None):
+def get_answer_batch(url, questions, char_step_size, batch_size, wiki_paragraphs=False):
     elog.info('Collecting responses to questions in batches', batch_size)
     answers = []
     batch_ids = list(range(0, len(questions), batch_size))
@@ -146,7 +146,6 @@ def check_port(hostname, port):
 @click.argument('input_dir')
 @click.argument('output_dir', default='predictions.json')
 @click.argument('score_dir', default='scores.json')
-@click.option('--retrieved_paragraphs_path', default=None)
 @click.option('--char_step_size', default=25)
 @click.option('--hostname', default='0.0.0.0')
 @click.option('--norun-web', default=False, is_flag=True)
@@ -154,7 +153,7 @@ def check_port(hostname, port):
 @click.option('--curve-pkl', default='curve_pipeline.pkl')
 @click.option('--retries', default=20)
 @click.option('--retry-delay', default=3)
-def evaluate(input_dir, retrieved_paragraphs_path, output_dir, score_dir, char_step_size, hostname,
+def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
              norun_web, wait, curve_pkl, retries, retry_delay):
     try:
         if not norun_web:
@@ -178,27 +177,17 @@ def evaluate(input_dir, retrieved_paragraphs_path, output_dir, score_dir, char_s
         with open(input_dir) as f:
             questions = json.load(f)['questions']
 
-
-        if include_wiki_paragraphs:
-            retrieved_paragraphs = {}
-            with open(retrieved_paragraphs_path) as f:
-                for ln in f:
-                    q_paragraphs = json.loads(ln)
-                    retrieved_paragraphs[q_paragraphs['qanta_id']] = q_paragraphs['annotated_paras']
-        else:
-            retrieved_paragraphs = None
-
         if status is not None and status['batch'] is True:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/batch_act'
             answers = get_answer_batch(url, questions,
                                        char_step_size,
                                        status['batch_size'],
-                                       wiki_paragraphs=retrieved_paragraphs)
+                                       wiki_paragraphs=include_wiki_paragraphs)
         else:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
             answers = get_answer_single(url, questions,
                                         char_step_size,
-                                        wiki_paragraphs=retrieved_paragraphs)
+                                        wiki_paragraphs=include_wiki_paragraphs)
 
         with open(output_dir, 'w') as f:
             json.dump(answers, f)

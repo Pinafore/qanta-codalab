@@ -21,6 +21,7 @@ services:
       "--hostname", "qb",
       "--norun-web",
       "--char_step_size", "60",
+      "--retrieve_paragraphs", "False",
       "data/qanta.dev.2018.04.18.json"
     ]
     depends_on:

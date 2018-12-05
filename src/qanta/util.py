@@ -20,8 +20,8 @@ FILES = [
 
 OBJSTORE_PREFIX = 'https://obj.umiacs.umd.edu/processed_tossup/'
 QANTA_TRAIN_RETRIEVED_PARAGRAPHS = f'qanta.train.paragraphs.{DS_VERSION}.jsonl.zip'
-QANTA_DEV_RETRIEVED_PARAGRAPHS = f'qanta.dev.paragraphs.{DS_VERSION}.jsonl.zip'
-QANTA_TEST_RETRIEVED_PARAGRAPHS = f'qanta.test.paragraphs.{DS_VERSION}.jsonl.zip'
+QANTA_DEV_RETRIEVED_PARAGRAPHS = f'qanta.dev.paragraphs.{DS_VERSION}.json'
+QANTA_TEST_RETRIEVED_PARAGRAPHS = f'qanta.test.paragraphs.{DS_VERSION}.json'
 
 
 
