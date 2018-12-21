@@ -10,4 +10,5 @@ dependencies:
   - click
   - flask
 channels:
+  - anaconda
   - pytorch
