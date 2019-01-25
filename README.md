@@ -214,3 +214,19 @@ $ #config.fish: source ~/anaconda3/etc/fish/conf.d/conda.fish
 1. When training locally in docker, i got the training process killed.
 A: This happened in Mac users. You need to increase the memory in docker configuration. See the instructions from this website. https://lucianomolinari.com/2017/06/11/containers-being-killed-on-docker-for-mac/ 
 
+2. When I tried to install Codalab on Mac OS, I got the following error:
+```
+codalabworker 0.2.41 has requirement six==1.11.0, but you'll have six 1.12.0 which is incompatible.
+codalab 0.2.41 has requirement six==1.11.0, but you'll have six 1.12.0 which is incompatible.
+```
+A: This is because codalab is using a couple of out of date components, and Mac OS has a more recent version installed that you can't overwrite.  To fix this, you can install the specific version that codalab needs:
+```
+sudo pip2 install six==1.11.0
+```
+
+3. My pip is connected to Python3 and isn't letting me install packages for Codalab, which needs Python2.
+A: Install pip2:
+```
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python2.7 get-pip.py
+```
