@@ -69,6 +69,6 @@ def download(local_qanta_prefix, retrieve_paragraphs=False):
     if retrieve_paragraphs:
         for objstore_file, local_file in make_file_pairs(PARAGRAPH_FILES, OBJSTORE_PREFIX, local_qanta_prefix):
             download_file(objstore_file, local_file)
-            with zipfile.ZipFile(local_file, 'r') as zip_file:    
-                zip_file.extractall(local_qanta_prefix)
-                remove(local_file)
+#             with zipfile.ZipFile(local_file, 'r') as zip_file:    
+#                 zip_file.extractall(local_qanta_prefix)
+#                 remove(local_file)
