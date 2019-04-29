@@ -79,7 +79,7 @@ def retry_get_url(url, retries=5, delay=3):
     return None
 
 
-def get_question_query(qid, question, char_idx, wiki_paragraphs=False):
+def get_question_query(qid, question, evidence, char_idx, wiki_paragraphs=False):
     char_idx = min(char_idx, len(question['text']))
 
     for sent_idx, (st, ed) in enumerate(question['tokenizations']):
@@ -93,13 +93,21 @@ def get_question_query(qid, question, char_idx, wiki_paragraphs=False):
             'text': question['text'][:char_idx]
     }
     if wiki_paragraphs:
-        query['wiki_paragraphs'] = question['annotated_paras'][:sent_idx]
+        annotated_paras = []
+        for l in evidence['sent_evidences'][:sent_idx]:
+            paras = []
+            for x in l:
+                paras.append(x['sent_text'])
+            annotated_paras.append(' '.join(paras))
+
+        #query['wiki_paragraphs'] = question['annotated_paras'][:sent_idx]
+        query['wiki_paragraphs'] = annotated_paras
 
     return query
 
 
 
-def get_answer_single(url, questions, char_step_size, wiki_paragraphs=False):
+def get_answer_single(url, questions, evidences, char_step_size, wiki_paragraphs=False):
     elog.info('Collecting responses to questions')
     answers = []
     for question_idx, q in enumerate(tqdm(questions)):
@@ -108,14 +116,14 @@ def get_answer_single(url, questions, char_step_size, wiki_paragraphs=False):
         # get an answer every K characters
         for char_idx in range(1, len(q['text']) + char_step_size,
                               char_step_size):
-            query = get_question_query(question_idx, q, char_idx, wiki_paragraphs)
+            query = get_question_query(question_idx, q, evidences[question_idx], char_idx, wiki_paragraphs)
             resp = requests.post(url, json=query).json()
             query.update(resp)
             answers[-1].append(query)
     return answers
 
 
-def get_answer_batch(url, questions, char_step_size, batch_size, wiki_paragraphs=False):
+def get_answer_batch(url, questions, evidences, char_step_size, batch_size, wiki_paragraphs=False):
     elog.info('Collecting responses to questions in batches', batch_size)
     answers = []
     batch_ids = list(range(0, len(questions), batch_size))
@@ -129,7 +137,7 @@ def get_answer_batch(url, questions, char_step_size, batch_size, wiki_paragraphs
             query = {'questions': []}
             for i, q in enumerate(qs):
                 query['questions'].append(
-                    get_question_query(qids[i], q, char_idx, wiki_paragraphs))
+                    get_question_query(qids[i], q, evidences[i], char_idx, wiki_paragraphs))
             resp = requests.post(url, json=query).json()
             for i, r in enumerate(resp):
                 q = query['questions'][i]
@@ -144,6 +152,7 @@ def check_port(hostname, port):
 
 @click.command()
 @click.argument('input_dir')
+@click.argument('evidence_dir', default='data/evidence_docs_dev_with_sent_text.json')
 @click.argument('output_dir', default='predictions.json')
 @click.argument('score_dir', default='scores.json')
 @click.option('--char_step_size', default=25)
@@ -153,7 +162,7 @@ def check_port(hostname, port):
 @click.option('--curve-pkl', default='curve_pipeline.pkl')
 @click.option('--retries', default=20)
 @click.option('--retry-delay', default=3)
-def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
+def evaluate(input_dir, evidence_dir, output_dir, score_dir, char_step_size, hostname,
              norun_web, wait, curve_pkl, retries, retry_delay):
     try:
         if not norun_web:
@@ -175,17 +184,26 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
             include_wiki_paragraphs = False
 
         with open(input_dir) as f:
+            # print(input_dir)
+            # print(output_dir)
+            # print(score_dir)
+            # print('!!!!!!!!!!!!!!!')
             questions = json.load(f)['questions']
+
+        with open(evidence_dir) as f:
+            evidences = json.load(f)['evidence']
+            # print(type(evidences))
+            # print('!!!!!!!!!!')
 
         if status is not None and status['batch'] is True:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/batch_act'
-            answers = get_answer_batch(url, questions,
+            answers = get_answer_batch(url, questions, evidences,
                                        char_step_size,
                                        status['batch_size'],
                                        wiki_paragraphs=include_wiki_paragraphs)
         else:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/act'
-            answers = get_answer_single(url, questions,
+            answers = get_answer_single(url, questions, evidences,
                                         char_step_size,
                                         wiki_paragraphs=include_wiki_paragraphs)
 
