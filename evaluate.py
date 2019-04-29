@@ -114,12 +114,20 @@ def get_answer_single(url, questions, evidences, char_step_size, wiki_paragraphs
         elog.info(f'Running question_idx={question_idx} qnum={q["qanta_id"]}')
         answers.append([])
         # get an answer every K characters
-        for char_idx in range(1, len(q['text']) + char_step_size,
-                              char_step_size):
-            query = get_question_query(question_idx, q, evidences[question_idx], char_idx, wiki_paragraphs)
-            resp = requests.post(url, json=query).json()
-            query.update(resp)
-            answers[-1].append(query)
+        if wiki_paragraphs:
+            for char_idx in range(1, len(q['text']) + char_step_size,
+                                  char_step_size):
+                query = get_question_query(question_idx, q, evidences[question_idx], char_idx, wiki_paragraphs)
+                resp = requests.post(url, json=query).json()
+                query.update(resp)
+                answers[-1].append(query)
+        else:
+            for char_idx in range(1, len(q['text']) + char_step_size,
+                                  char_step_size):
+                query = get_question_query(question_idx, q, [], char_idx, wiki_paragraphs)
+                resp = requests.post(url, json=query).json()
+                query.update(resp)
+                answers[-1].append(query)    
     return answers
 
 
@@ -133,16 +141,28 @@ def get_answer_batch(url, questions, evidences, char_step_size, batch_size, wiki
         max_len = max(len(q['text']) for q in qs)
         qids = list(range(batch_idx, batch_ed))
         answers += [[] for _ in qs]
-        for char_idx in range(1, max_len + char_step_size, char_step_size):
-            query = {'questions': []}
-            for i, q in enumerate(qs):
-                query['questions'].append(
-                    get_question_query(qids[i], q, evidences[i], char_idx, wiki_paragraphs))
-            resp = requests.post(url, json=query).json()
-            for i, r in enumerate(resp):
-                q = query['questions'][i]
-                q.update(r)
-                answers[qids[i]].append(q)
+        if wiki_paragraphs:
+            for char_idx in range(1, max_len + char_step_size, char_step_size):
+                query = {'questions': []}
+                for i, q in enumerate(qs):
+                    query['questions'].append(
+                        get_question_query(qids[i], q, evidences[i], char_idx, wiki_paragraphs))
+                resp = requests.post(url, json=query).json()
+                for i, r in enumerate(resp):
+                    q = query['questions'][i]
+                    q.update(r)
+                    answers[qids[i]].append(q)
+        else:
+           for char_idx in range(1, max_len + char_step_size, char_step_size):
+                query = {'questions': []}
+                for i, q in enumerate(qs):
+                    query['questions'].append(
+                        get_question_query(qids[i], q, [], char_idx, wiki_paragraphs))
+                resp = requests.post(url, json=query).json()
+                for i, r in enumerate(resp):
+                    q = query['questions'][i]
+                    q.update(r)
+                    answers[qids[i]].append(q)
     return answers
 
 
@@ -152,7 +172,7 @@ def check_port(hostname, port):
 
 @click.command()
 @click.argument('input_dir')
-@click.argument('evidence_dir', default='data/evidence_docs_dev_with_sent_text.json')
+#@click.argument('evidence_dir', default='data/evidence_docs_dev_with_sent_text.json')
 @click.argument('output_dir', default='predictions.json')
 @click.argument('score_dir', default='scores.json')
 @click.option('--char_step_size', default=25)
@@ -162,7 +182,7 @@ def check_port(hostname, port):
 @click.option('--curve-pkl', default='curve_pipeline.pkl')
 @click.option('--retries', default=20)
 @click.option('--retry-delay', default=3)
-def evaluate(input_dir, evidence_dir, output_dir, score_dir, char_step_size, hostname,
+def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
              norun_web, wait, curve_pkl, retries, retry_delay):
     try:
         if not norun_web:
@@ -189,9 +209,12 @@ def evaluate(input_dir, evidence_dir, output_dir, score_dir, char_step_size, hos
             # print(score_dir)
             # print('!!!!!!!!!!!!!!!')
             questions = json.load(f)['questions']
-
-        with open(evidence_dir) as f:
-            evidences = json.load(f)['evidence']
+                  
+        evidences = []
+        if include_wiki_paragraphs:
+            evidence_dir = 'data/evidence_docs_dev_with_sent_text.json'
+            with open(evidence_dir) as f:
+                evidences = json.load(f)['evidence']
             # print(type(evidences))
             # print('!!!!!!!!!!')
 
