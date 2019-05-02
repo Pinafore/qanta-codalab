@@ -93,16 +93,9 @@ def get_question_query(qid, question, evidence, char_idx, wiki_paragraphs=False)
             'text': question['text'][:char_idx]
     }
     if wiki_paragraphs:
-        annotated_paras = []
-        for l in evidence['sent_evidences'][:sent_idx]:
-            paras = []
-            for x in l:
-                paras.append(x['sent_text'])
-            annotated_paras.append(' '.join(paras))
-
-        #query['wiki_paragraphs'] = question['annotated_paras'][:sent_idx]
-        query['wiki_paragraphs'] = annotated_paras
-
+        evidences = evidence['sent_evidences'][:sent_idx+1]
+        #evidences here is a list of lists of length = #sentences seen so far, and each sublist is contains 5 dictionaries for the 5 top sentences
+        query['wiki_paragraphs'] = evidences
     return query
 
 
@@ -142,11 +135,12 @@ def get_answer_batch(url, questions, evidences, char_step_size, batch_size, wiki
         qids = list(range(batch_idx, batch_ed))
         answers += [[] for _ in qs]
         if wiki_paragraphs:
+            evs = evidences[batch_idx: batch_ed]
             for char_idx in range(1, max_len + char_step_size, char_step_size):
                 query = {'questions': []}
                 for i, q in enumerate(qs):
                     query['questions'].append(
-                        get_question_query(qids[i], q, evidences[i], char_idx, wiki_paragraphs))
+                        get_question_query(qids[i], q, evs[i], char_idx, wiki_paragraphs))
                 resp = requests.post(url, json=query).json()
                 for i, r in enumerate(resp):
                     q = query['questions'][i]
@@ -204,10 +198,6 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
             include_wiki_paragraphs = False
 
         with open(input_dir) as f:
-            # print(input_dir)
-            # print(output_dir)
-            # print(score_dir)
-            # print('!!!!!!!!!!!!!!!')
             questions = json.load(f)['questions']
                   
         evidences = []
@@ -215,8 +205,6 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
             evidence_dir = 'data/evidence_docs_dev_with_sent_text.json'
             with open(evidence_dir) as f:
                 evidences = json.load(f)['evidence']
-            # print(type(evidences))
-            # print('!!!!!!!!!!')
 
         if status is not None and status['batch'] is True:
             url = f'http://{hostname}:4861/api/1.0/quizbowl/batch_act'
@@ -239,6 +227,7 @@ def evaluate(input_dir, output_dir, score_dir, char_step_size, hostname,
         end_acc = []
         ew = []
         ew_opt = []
+
         for question_idx, guesses in enumerate(answers):
             question = questions[question_idx]
             answer = question['page']
