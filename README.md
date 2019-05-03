@@ -54,13 +54,8 @@ In addition to the `question_text` field shown in the `httpie` sample request we
 ### Optional Wikipedia paragraphs
  Models can optionally (see the status API below) request providing retrieved Wikipedia paragraphs for each sentence of the questions. In that case,
 one more field, `wiki_paragraphs`, is added to the input. `wiki_paragraphs`
-is a list of the top-10 retrieved paragraphs for each completed
-question sentence. Each paragraph is a dictionary of two items:
-`paragaraph` which contains the paragraph text and `entities` which
-is a list of the extracted entity mentions from the paragraph. Each mention
-is formatted as a list of wikipedia page title, mention start index,
-mention end index, confidence score and wikipedia page id.
-We used [TagME](https://tagme.d4science.org/tagme/) to find the entity mentions.
+is a list of the top-5 retrieved sentences for each completed
+question sentence. Each sentence contains the page from which the sentence comes from, the paragraph and sentence index in that page, the sentence text, and correct answer spans (to help build RC systems). An IR system example actually using these files can be found [here](https://github.com/Pranav-Goel/Naive_IR_Baseline_qanta).
 
 ## Output Format
 The output answer to each question is also a json object of two fields
