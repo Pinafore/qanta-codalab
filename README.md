@@ -154,6 +154,10 @@ Output:
 }
 ```
 
+# Managing your own special dependencies
+
+If you have no special dependencies, you should not have to create your own docker container, the image we provide and the instructions above should suffice in most cases. In case you have an environment with some non-standard dependencies, you may want to create a docker container for the environment for replicability purposes. You will create your docker container the standard way; some resources that may help: https://docker-curriculum.com/, https://testcollab.com/blog/using-docker-to-manage-and-replicate-test-environments/, https://sweetcode.io/using-docker-reproducible-build-environments/.
+
 # Codalab
 
 These instructions show you how to setup and run a codalab compatible model locally, but to submit to codalab you should follow the instructions at [codalab.qanta.org](http://codalab.qanta.org/).
