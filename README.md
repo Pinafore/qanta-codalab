@@ -229,3 +229,5 @@ sudo python2.7 get-pip.py
 ```
 
 4.  FOR MAC USERS: I keep getting messages indicating a container was "Killed".  A: [Follow these instructions](https://lucianomolinari.com/2017/06/11/containers-being-killed-on-docker-for-mac/) to allow Docker to use more CPU/RAM.
+
+5. TIP: You might want to use Python 3.6 and above for your code.
